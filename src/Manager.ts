@@ -7,6 +7,10 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="./contracts.ts" />
+
+import { ManagerContract } from '@poppinss/manager/contracts'
+
 /**
  * Manager class implements the Builder pattern to make instance of similar
  * implementations using a fluent API vs importing each class by hand.
@@ -14,7 +18,10 @@
  * This module is used extensively in AdonisJs. For example: `Mail`, `Sessions`,
  * `Auth` and so on.
  */
-export abstract class Manager<T> {
+export abstract class Manager<
+  DriverContract extends any,
+  DriversList extends string = any
+> implements ManagerContract<DriverContract, DriversList> {
   /**
    * Drivers cache (if caching is enabled)
    */
@@ -23,7 +30,7 @@ export abstract class Manager<T> {
   /**
    * List of drivers added at runtime
    */
-  private _extendedDrivers: { [key: string]: (container) => T } = {}
+  private _extendedDrivers: { [key: string]: (container: any) => DriverContract } = {}
 
   /**
    * Whether or not to cache drivers
@@ -34,16 +41,16 @@ export abstract class Manager<T> {
    * Getting the default driver name, incase a named driver
    * is not fetched
    */
-  protected abstract getDefaultDriver (): string
+  protected abstract getDefaultDriver (): DriversList
 
-  constructor (protected $container) {
+  constructor (protected $container: any) {
   }
 
   /**
    * Returns the value saved inside cache, this method will check for
    * `cacheDrivers` attribute before entertaining the cache
    */
-  private _getCachedDriver (name: string): T | null {
+  private _getCachedDriver (name: string): DriverContract | null {
     if (this.$cacheDrivers && this._driversCache[name]) {
       return this._driversCache[name]
     }
@@ -55,7 +62,7 @@ export abstract class Manager<T> {
    * Saves value to the cache with the driver name. This method will check for
    * `cacheDrivers` attribute before entertaining the cache.
    */
-  private _saveDriverToCache (name: string, value: T): void {
+  private _saveDriverToCache (name: string, value: DriverContract): void {
     if (this.$cacheDrivers) {
       this._driversCache[name] = value
     }
@@ -64,7 +71,7 @@ export abstract class Manager<T> {
   /**
    * Make the extended driver instance and save it to cache (if enabled)
    */
-  private _makeExtendedDriver (name: string): T {
+  private _makeExtendedDriver (name: string): DriverContract {
     const value = this._extendedDrivers[name](this.$container)
     this._saveDriverToCache(name, value)
 
@@ -78,7 +85,7 @@ export abstract class Manager<T> {
    * For example: `stmp` as the driver name will look for `createSmtp`
    * method on the parent class.
    */
-  private _makeDriver (name: string): T {
+  private _makeDriver (name: string): DriverContract {
     const driverCreatorName = `create${name.replace(/^\w|-\w/g, (g) => g.replace(/^-/, '').toUpperCase())}`
 
     /**
@@ -98,7 +105,7 @@ export abstract class Manager<T> {
    * Returns the instance of a given driver. If `name` is not defined
    * the default driver will be resolved.
    */
-  public driver (name?: string): T {
+  public driver (name?: DriversList): DriverContract {
     name = name || this.getDefaultDriver()
 
     const cached = this._getCachedDriver(name)
@@ -117,7 +124,7 @@ export abstract class Manager<T> {
    * Extend by adding new driver. The compositon of driver
    * is the responsibility of the callback function
    */
-  public extend (name: string, callback: (container) => T) {
+  public extend (name: string, callback: (container: any) => DriverContract) {
     this._extendedDrivers[name] = callback
   }
 }

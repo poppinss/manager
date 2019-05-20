@@ -7,4 +7,7 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="./src/contracts.ts" />
+
 export { Manager } from './src/Manager'
+export { ManagerContract } from '@poppinss/manager/contracts'
