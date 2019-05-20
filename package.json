@@ -1,6 +1,6 @@
 {
   "name": "@poppinss/manager",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "The builder (Manager) pattern implementation",
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
