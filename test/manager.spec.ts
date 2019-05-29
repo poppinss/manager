@@ -1,5 +1,5 @@
 /**
- * adonis-manager
+ * @poppinss/manager
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -11,7 +11,7 @@ import * as test from 'japa'
 import { Manager } from '../src/Manager'
 
 interface Mailable {
-  send ()
+  send (): void
 }
 
 test.group('Manager', () => {

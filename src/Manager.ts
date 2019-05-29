@@ -1,3 +1,7 @@
+/**
+ * @module @poppinss/manager
+ */
+
 /*
 * @poppinss/manager
 *
@@ -7,9 +11,7 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="./contracts.ts" />
-
-import { ManagerContract } from '@poppinss/manager/contracts'
+import { ManagerContract } from './contracts'
 
 /**
  * Manager class implements the Builder pattern to make instance of similar

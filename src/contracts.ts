@@ -1,3 +1,7 @@
+/**
+ * @module @poppinss/manager
+ */
+
 /*
 * @poppinss/manager
 *
@@ -7,9 +11,7 @@
 * file that was distributed with this source code.
 */
 
-declare module '@poppinss/manager/contracts' {
-  export interface ManagerContract<DriverContract extends any, DriversList extends string = any> {
-    driver (name?: DriversList): DriverContract,
-    extend (name: string, callback: (container: any) => DriverContract): void,
-  }
+export interface ManagerContract<DriverContract extends any, DriversList extends string = any> {
+  driver (name?: DriversList): DriverContract,
+  extend (name: string, callback: (container: any) => DriverContract): void,
 }

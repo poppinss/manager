@@ -1,3 +1,7 @@
+/**
+ * @module @poppinss/manager
+ */
+
 /*
 * @poppinss/manager
 *
@@ -7,7 +11,5 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="./src/contracts.ts" />
-
 export { Manager } from './src/Manager'
-export { ManagerContract } from '@poppinss/manager/contracts'
+export { ManagerContract } from './src/contracts'
