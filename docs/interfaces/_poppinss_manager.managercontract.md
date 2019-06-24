@@ -1,58 +1,84 @@
-[@poppinss/manager](../README.md) > [@poppinss/manager](../modules/_poppinss_manager.md) > [ManagerContract](../interfaces/_poppinss_manager.managercontract.md)
+> ## [@poppinss/manager](../README.md)
 
-# Interface: ManagerContract
+[@poppinss/manager](../modules/_poppinss_manager.md) / [ManagerContract](_poppinss_manager.managercontract.md) /
+
+# Interface: ManagerContract <**DriverContract, DriversList, DefaultDriver**>
 
 ## Type parameters
-#### DriverContract :  `any`
-#### DriversList :  `string`
+
+■` DriverContract`: *any*
+
+■` DriversList`: *object*
+
+■` DefaultDriver`: *`DriverContract`*
+
 ## Hierarchy
 
-**ManagerContract**
+* **ManagerContract**
 
 ## Implemented by
 
 * [Manager](../classes/_poppinss_manager.manager.md)
 
-## Index
+### Index
 
-### Methods
+#### Methods
 
 * [driver](_poppinss_manager.managercontract.md#driver)
 * [extend](_poppinss_manager.managercontract.md#extend)
 
----
-
 ## Methods
-
-<a id="driver"></a>
 
 ###  driver
 
-▸ **driver**(name?: *[DriversList]()*): `DriverContract`
+▸ **driver**<**K**>(`name`: `K`): *`DriversList[K]`*
+
+**Type parameters:**
+
+■` K`: *keyof DriversList*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| `Optional` name | [DriversList]() |
+Name | Type |
+------ | ------ |
+`name` | `K` |
 
-**Returns:** `DriverContract`
+**Returns:** *`DriversList[K]`*
+
+▸ **driver**(`name`: string): *`DriverContract`*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`name` | string |
+
+**Returns:** *`DriverContract`*
+
+▸ **driver**(): *`DefaultDriver`*
+
+**Returns:** *`DefaultDriver`*
 
 ___
-<a id="extend"></a>
 
 ###  extend
 
-▸ **extend**(name: *`string`*, callback: *`function`*): `void`
+▸ **extend**(`name`: string, `callback`: function): *void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
-| callback | `function` |
+■` name`: *string*
 
-**Returns:** `void`
+■` callback`: *function*
+
+▸ (`container`: any): *`DriverContract`*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`container` | any |
+
+**Returns:** *void*
 
 ___
-

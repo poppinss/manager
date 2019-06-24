@@ -1,16 +1,15 @@
-[@poppinss/manager](../README.md) > [@poppinss/manager](../modules/_poppinss_manager.md)
+> ## [@poppinss/manager](../README.md)
+
+[@poppinss/manager](_poppinss_manager.md) /
 
 # External module: @poppinss/manager
 
-## Index
+### Index
 
-### Classes
+#### Classes
 
 * [Manager](../classes/_poppinss_manager.manager.md)
 
-### Interfaces
+#### Interfaces
 
 * [ManagerContract](../interfaces/_poppinss_manager.managercontract.md)
-
----
-

@@ -1,11 +1,7 @@
+> ## [@poppinss/manager](README.md)
 
-#  @poppinss/manager
+### Index
 
-## Index
-
-### External modules
+#### External modules
 
 * [@poppinss/manager](modules/_poppinss_manager.md)
-
----
-

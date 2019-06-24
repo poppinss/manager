@@ -1,124 +1,153 @@
-[@poppinss/manager](../README.md) > [@poppinss/manager](../modules/_poppinss_manager.md) > [Manager](../classes/_poppinss_manager.manager.md)
+> ## [@poppinss/manager](../README.md)
 
-# Class: Manager
+[@poppinss/manager](../modules/_poppinss_manager.md) / [Manager](_poppinss_manager.manager.md) /
 
-Manager class implements the Builder pattern to make instance of similar implementations using a fluent API vs importing each class by hand.
+# Class: Manager <**DriverContract, DriversList, DefaultDriver**>
 
-This module is used extensively in AdonisJs. For example: `Mail`, `Sessions`, `Auth` and so on.
+Manager class implements the Builder pattern to make instance of similar
+implementations using a fluent API vs importing each class by hand.
+
+This module is used extensively in AdonisJs. For example: `Mail`, `Sessions`,
+`Auth` and so on.
 
 ## Type parameters
-#### DriverContract :  `any`
-#### DriversList :  `string`
+
+■` DriverContract`: *any*
+
+■` DriversList`: *object*
+
+■` DefaultDriver`: *`DriverContract`*
+
 ## Hierarchy
 
-**Manager**
+* **Manager**
 
 ## Implements
 
-* [ManagerContract](../interfaces/_poppinss_manager.managercontract.md)<`DriverContract`, `DriversList`>
+* [ManagerContract](../interfaces/_poppinss_manager.managercontract.md)‹*`DriverContract`*, *`DriversList`*, *`DefaultDriver`*›
 
-## Index
+### Index
 
-### Constructors
+#### Constructors
 
 * [constructor](_poppinss_manager.manager.md#constructor)
 
-### Properties
+#### Properties
 
-* [$cacheDrivers](_poppinss_manager.manager.md#_cachedrivers)
-* [$container](_poppinss_manager.manager.md#_container)
+* [$cacheDrivers](_poppinss_manager.manager.md#protected-abstract-$cachedrivers)
+* [$container](_poppinss_manager.manager.md#protected-$container)
 
-### Methods
+#### Methods
 
 * [driver](_poppinss_manager.manager.md#driver)
 * [extend](_poppinss_manager.manager.md#extend)
-* [getDefaultDriver](_poppinss_manager.manager.md#getdefaultdriver)
-
----
+* [getDefaultDriverName](_poppinss_manager.manager.md#protected-abstract-getdefaultdrivername)
 
 ## Constructors
 
-<a id="constructor"></a>
-
 ###  constructor
 
-⊕ **new Manager**($container: *`any`*): [Manager](_poppinss_manager.manager.md)
+\+ **new Manager**(`$container`: any): *[Manager](_poppinss_manager.manager.md)*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| $container | `any` |
+Name | Type |
+------ | ------ |
+`$container` | any |
 
-**Returns:** [Manager](_poppinss_manager.manager.md)
+**Returns:** *[Manager](_poppinss_manager.manager.md)*
 
 ___
 
 ## Properties
 
-<a id="_cachedrivers"></a>
+### `Protected` `Abstract` $cacheDrivers
 
-### `<Protected>``<Abstract>` $cacheDrivers
-
-**● $cacheDrivers**: *`boolean`*
+● **$cacheDrivers**: *boolean*
 
 Whether or not to cache drivers
 
 ___
-<a id="_container"></a>
 
-### `<Protected>` $container
+### `Protected` $container
 
-**● $container**: *`any`*
+● **$container**: *any*
 
 ___
 
 ## Methods
 
-<a id="driver"></a>
-
 ###  driver
 
-▸ **driver**(name?: *[DriversList]()*): `DriverContract`
+▸ **driver**<**K**>(`name`: `K`): *`DriversList[K]`*
 
-Returns the instance of a given driver. If `name` is not defined the default driver will be resolved.
+Returns the instance of a given driver. If `name` is not defined
+the default driver will be resolved.
+
+**Type parameters:**
+
+■` K`: *keyof DriversList*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| `Optional` name | [DriversList]() |
+Name | Type |
+------ | ------ |
+`name` | `K` |
 
-**Returns:** `DriverContract`
+**Returns:** *`DriversList[K]`*
+
+▸ **driver**(`name`: string): *`DriverContract`*
+
+*Implementation of [ManagerContract](../interfaces/_poppinss_manager.managercontract.md)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`name` | string |
+
+**Returns:** *`DriverContract`*
+
+▸ **driver**(): *`DefaultDriver`*
+
+*Implementation of [ManagerContract](../interfaces/_poppinss_manager.managercontract.md)*
+
+**Returns:** *`DefaultDriver`*
 
 ___
-<a id="extend"></a>
 
 ###  extend
 
-▸ **extend**(name: *`string`*, callback: *`function`*): `void`
+▸ **extend**(`name`: string, `callback`: function): *void*
 
-Extend by adding new driver. The compositon of driver is the responsibility of the callback function
+Extend by adding new driver. The compositon of driver
+is the responsibility of the callback function
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
-| callback | `function` |
+■` name`: *string*
 
-**Returns:** `void`
+■` callback`: *function*
 
-___
-<a id="getdefaultdriver"></a>
+▸ (`container`: any): *`DriverContract`*
 
-### `<Protected>``<Abstract>` getDefaultDriver
+**Parameters:**
 
-▸ **getDefaultDriver**(): `DriversList`
+Name | Type |
+------ | ------ |
+`container` | any |
 
-Getting the default driver name, incase a named driver is not fetched
-
-**Returns:** `DriversList`
+**Returns:** *void*
 
 ___
 
+### `Protected` `Abstract` getDefaultDriverName
+
+▸ **getDefaultDriverName**(): *string*
+
+Getting the default driver name, incase a named driver
+is not fetched
+
+**Returns:** *string*
+
+___
