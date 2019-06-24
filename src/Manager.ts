@@ -22,8 +22,9 @@ import { ManagerContract } from './contracts'
  */
 export abstract class Manager<
   DriverContract extends any,
-  DriversList extends string = any
-> implements ManagerContract<DriverContract, DriversList> {
+  DriversList extends { [key: string]: DriverContract } = { [key: string]: DriverContract },
+  DefaultDriver extends DriverContract = DriverContract,
+> implements ManagerContract<DriverContract, DriversList, DefaultDriver> {
   /**
    * Drivers cache (if caching is enabled)
    */
@@ -43,7 +44,7 @@ export abstract class Manager<
    * Getting the default driver name, incase a named driver
    * is not fetched
    */
-  protected abstract getDefaultDriver (): DriversList
+  protected abstract getDefaultDriverName (): string
 
   constructor (protected $container: any) {
   }
@@ -107,8 +108,13 @@ export abstract class Manager<
    * Returns the instance of a given driver. If `name` is not defined
    * the default driver will be resolved.
    */
-  public driver (name?: DriversList): DriverContract {
-    name = name || this.getDefaultDriver()
+  public driver<K extends keyof DriversList> (name: K): DriversList[K]
+  public driver (name: string): DriverContract
+  public driver (): DefaultDriver
+  public driver<K extends keyof DriversList> (
+    name?: K | string,
+  ): DriversList[K] | DriverContract | DefaultDriver {
+    name = (name || this.getDefaultDriverName()) as string
 
     const cached = this._getCachedDriver(name)
     if (cached) {

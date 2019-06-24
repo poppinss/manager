@@ -94,7 +94,7 @@ Continuing to the same example, let's create a Manager class that abstracts away
 import { Manager } from '@poppinss/manager'
 
 class SessionManager extends Manager<Session> {
-  protected defaultDriver () {
+  protected getDefaultDriverName () {
     return 'file'
   }
 
@@ -135,7 +135,10 @@ session.driver('mongo') // MongoDriver
 Also, you can pass a union to the `Manager` constructor and it will typehint the list of drivers for you.
 
 ```ts
-class SessionManager extends Manager<Session, ('file' | 'redis')> {
+class SessionManager extends Manager<
+  Session,
+  { file: SessionFileDriver, redis: SessionRedisDriver },
+> {
 }
 
 new SessionManager

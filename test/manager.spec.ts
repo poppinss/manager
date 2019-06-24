@@ -18,7 +18,7 @@ test.group('Manager', () => {
   test('raise error when driver doesn\'t exists', (assert) => {
     class Mail extends Manager<Mailable> {
       protected $cacheDrivers = false
-      protected getDefaultDriver () {
+      protected getDefaultDriverName () {
         return 'smtp'
       }
     }
@@ -36,7 +36,7 @@ test.group('Manager', () => {
 
     class Mail extends Manager<Mailable> {
       protected $cacheDrivers = false
-      protected getDefaultDriver () {
+      protected getDefaultDriverName () {
         return 'smtp'
       }
 
@@ -57,7 +57,7 @@ test.group('Manager', () => {
 
     class Mail extends Manager<Mailable> {
       protected $cacheDrivers = false
-      protected getDefaultDriver () {
+      protected getDefaultDriverName () {
         return 'smtp'
       }
 
@@ -78,7 +78,7 @@ test.group('Manager', () => {
 
     class Mail extends Manager<Mailable> {
       protected $cacheDrivers = false
-      protected getDefaultDriver () {
+      protected getDefaultDriverName () {
         return 'smtp'
       }
     }
@@ -106,7 +106,7 @@ test.group('Manager', () => {
 
     class Mail extends Manager<Mailable> {
       protected $cacheDrivers = true
-      protected getDefaultDriver () {
+      protected getDefaultDriverName () {
         return 'smtp'
       }
 
@@ -134,7 +134,7 @@ test.group('Manager', () => {
 
     class Mail extends Manager<Mailable> {
       protected $cacheDrivers = true
-      protected getDefaultDriver () {
+      protected getDefaultDriverName () {
         return 'smtp'
       }
     }
