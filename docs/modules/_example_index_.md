@@ -1,5 +1,5 @@
-> ## [@poppinss/manager](../README.md)
+**[@poppinss/manager](../README.md)**
 
-["example/index"](_example_index_.md) /
+[Globals](../README.md) › ["example/index"](_example_index_.md)
 
 # External module: "example/index"

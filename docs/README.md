@@ -1,8 +1,11 @@
-> ## [@poppinss/manager](README.md)
+**[@poppinss/manager](README.md)**
 
-### Index
+[Globals](README.md)
 
-#### External modules
+## Index
+
+### External modules
 
 * ["example/index"](modules/_example_index_.md)
-* [@poppinss/manager](modules/_poppinss_manager.md)
+* ["src/Manager"](modules/_src_manager_.md)
+* ["src/contracts"](modules/_src_contracts_.md)
