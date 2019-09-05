@@ -1,8 +1,5 @@
 import {
-  DriverNodesList,
-  ExtractDriversConfig,
-  ExtractDefaultDriverImpl,
-  ExtractDriversImpl,
+  ExtractMappingsList,
 } from '../src/contracts'
 
 import { Manager } from '../src/Manager'
@@ -35,63 +32,56 @@ class SessionFileDriver implements SessionDriverContract {
   }
 }
 
-class SessionManager <
-  /**
-   * Accept a list of driver and each driver must adhere to the
-   * Session driver contract
-   */
-  DriversList extends DriverNodesList<SessionDriverContract, any>,
-
-  /**
-   * Receive conventional config object. The driver value is a string and must
-   * one of drivers name.
-   */
-  Config extends { driver: keyof DriversList } & ExtractDriversConfig<DriversList>,
-
-  /**
-   * Pulling the default driver as per the config. The default driver is used
-   * when no other driver is defined.
-   */
-  DefaultDriver extends ExtractDefaultDriverImpl<DriversList, Config> = ExtractDefaultDriverImpl<DriversList, Config>
+class SessionManager<
+  Config extends { mapping: keyof Mappings },
 > extends Manager<
   SessionDriverContract,
-  ExtractDriversImpl<DriversList>,
-  DefaultDriver
+  ExtractMappingsList<Mappings>,
+  Mappings[Config['mapping']]['implementation']
 > {
   constructor (public config: Config) {
     super({})
   }
 
-  protected $cacheDrivers = false
+  protected $cacheMappings = false
 
-  protected getDefaultDriverName (): Config['driver'] {
-    return this.config.driver as Config['driver']
+  protected getDefaultMappingName (): string {
+    return this.config.mapping
+  }
+
+  protected getMappingConfig (name: string): any {
+    return this.config[name].config
+  }
+
+  protected getMappingDriver (name: string): any {
+    return this.config[name].driver
   }
 }
 
-type Drivers = {
+type Mappings = {
   file: {
-    config: any,
+    driver: 'file',
     implementation: SessionFileDriver,
   },
   redis: {
-    config: any,
+    driver: 'redis',
     implementation: SessionRedisDriver,
   },
 }
 
-const config = {
-  driver: 'file' as 'file',
-  file: {},
+type MappingsToConfig = { [P in keyof Mappings]: Omit<Mappings[P], 'implementation'> }
+
+const config: { mapping: 'file', mappings: MappingsToConfig } = {
+  mapping: 'file',
+  mappings: {
+    file: {
+      driver: 'file',
+    },
+    redis: {
+      driver: 'redis',
+    },
+  },
 }
 
-const session = new SessionManager<Drivers, typeof config>(config)
-
-// Instance of file driver
-session.driver()
-
-// Instance of redis driver
-session.driver('redis')
-
-// Instance of file driver
-session.driver('file')
+const session = new SessionManager(config)
+session.use()

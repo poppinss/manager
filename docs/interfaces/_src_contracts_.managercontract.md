@@ -2,15 +2,15 @@
 
 [Globals](../README.md) › ["src/contracts"](../modules/_src_contracts_.md) › [ManagerContract](_src_contracts_.managercontract.md)
 
-# Interface: ManagerContract <**DriverContract, DriversList, DefaultDriver**>
+# Interface: ManagerContract <**DriverContract, MappingsList, DefaultItem**>
 
 ## Type parameters
 
 ▪ **DriverContract**: *any*
 
-▪ **DriversList**: *object*
+▪ **MappingsList**: *object*
 
-▪ **DefaultDriver**: *DriverContract*
+▪ **DefaultItem**: *DriverContract*
 
 ## Hierarchy
 
@@ -24,42 +24,10 @@
 
 ### Methods
 
-* [driver](_src_contracts_.managercontract.md#driver)
 * [extend](_src_contracts_.managercontract.md#extend)
+* [use](_src_contracts_.managercontract.md#use)
 
 ## Methods
-
-###  driver
-
-▸ **driver**<**K**>(`name`: K): *DriversList[K]*
-
-**Type parameters:**
-
-▪ **K**: *keyof DriversList*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`name` | K |
-
-**Returns:** *DriversList[K]*
-
-▸ **driver**(`name`: string): *DriverContract*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`name` | string |
-
-**Returns:** *DriverContract*
-
-▸ **driver**(): *DefaultDriver*
-
-**Returns:** *DefaultDriver*
-
-___
 
 ###  extend
 
@@ -80,3 +48,35 @@ Name | Type |
 `container` | any |
 
 **Returns:** *void*
+
+___
+
+###  use
+
+▸ **use**<**K**>(`name`: K): *MappingsList[K]*
+
+**Type parameters:**
+
+▪ **K**: *keyof MappingsList*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`name` | K |
+
+**Returns:** *MappingsList[K]*
+
+▸ **use**(`name`: string): *DefaultItem*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`name` | string |
+
+**Returns:** *DefaultItem*
+
+▸ **use**(): *DefaultItem*
+
+**Returns:** *DefaultItem*

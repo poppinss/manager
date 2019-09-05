@@ -15,38 +15,56 @@ interface Mailable {
 }
 
 test.group('Manager', () => {
-  test('raise error when driver doesn\'t exists', (assert) => {
+  test('raise error when driver create function doesn\'t exists', (assert) => {
     class Mail extends Manager<Mailable> {
-      protected $cacheDrivers = false
-      protected getDefaultDriverName () {
+      protected $cacheMappings = false
+      protected getDefaultMappingName () {
+        return 'smtp'
+      }
+      protected getMappingConfig () {
+        return {}
+      }
+      protected getMappingDriver () {
         return 'smtp'
       }
     }
 
     const mail = new Mail({})
-    const fn = () => mail.driver()
+    const fn = () => mail.use()
 
     assert.throw(fn, 'smtp driver is not supported by Mail')
   })
 
   test('resolve default driver when no name is defined', (assert) => {
+    assert.plan(3)
     class Smtp implements Mailable {
       public send () {}
     }
 
     class Mail extends Manager<Mailable> {
-      protected $cacheDrivers = false
-      protected getDefaultDriverName () {
+      protected $cacheMappings = false
+
+      protected getDefaultMappingName () {
         return 'smtp'
       }
 
-      public createSmtp (): Mailable {
+      protected getMappingConfig () {
+        return {}
+      }
+
+      protected getMappingDriver () {
+        return 'smtp'
+      }
+
+      public createSmtp (mapping: string, config: any): Mailable {
+        assert.equal(mapping, 'smtp')
+        assert.deepEqual(config, {})
         return new Smtp()
       }
     }
 
     const mail = new Mail({})
-    const driver = mail.driver()
+    const driver = mail.use()
     assert.instanceOf(driver, Smtp)
   })
 
@@ -56,9 +74,17 @@ test.group('Manager', () => {
     }
 
     class Mail extends Manager<Mailable> {
-      protected $cacheDrivers = false
-      protected getDefaultDriverName () {
+      protected $cacheMappings = false
+      protected getDefaultMappingName () {
         return 'smtp'
+      }
+
+      protected getMappingConfig () {
+        return {}
+      }
+
+      protected getMappingDriver () {
+        return 'mailgun'
       }
 
       public createMailgun (): Mailable {
@@ -67,8 +93,37 @@ test.group('Manager', () => {
     }
 
     const mail = new Mail({})
-    const driver = mail.driver('mailgun')
+    const driver = mail.use('mailgun')
     assert.instanceOf(driver, Mailgun)
+  })
+
+  test('raise exception when driver for a mapping is missing', (assert) => {
+    class Mailgun implements Mailable {
+      public send () {}
+    }
+
+    class Mail extends Manager<Mailable> {
+      protected $cacheMappings = false
+      protected getDefaultMappingName () {
+        return 'smtp'
+      }
+
+      protected getMappingConfig () {
+        return {}
+      }
+
+      protected getMappingDriver () {
+        return undefined
+      }
+
+      public createMailgun (): Mailable {
+        return new Mailgun()
+      }
+    }
+
+    const mail = new Mail({})
+    const driver = () => mail.use('mailgun')
+    assert.throw(driver, 'Make sure to define driver for mailgun mapping')
   })
 
   test('extend by adding custom drivers', (assert) => {
@@ -77,9 +132,17 @@ test.group('Manager', () => {
     }
 
     class Mail extends Manager<Mailable> {
-      protected $cacheDrivers = false
-      protected getDefaultDriverName () {
+      protected $cacheMappings = false
+      protected getDefaultMappingName () {
         return 'smtp'
+      }
+
+      protected getMappingConfig () {
+        return {}
+      }
+
+      protected getMappingDriver () {
+        return 'ses'
       }
     }
 
@@ -89,7 +152,7 @@ test.group('Manager', () => {
       return new Ses()
     })
 
-    const driver = mail.driver('ses')
+    const driver = mail.use('foo')
     assert.instanceOf(driver, Ses)
   })
 
@@ -105,8 +168,16 @@ test.group('Manager', () => {
     }
 
     class Mail extends Manager<Mailable> {
-      protected $cacheDrivers = true
-      protected getDefaultDriverName () {
+      protected $cacheMappings = true
+      protected getDefaultMappingName () {
+        return 'smtp'
+      }
+
+      protected getMappingConfig () {
+        return {}
+      }
+
+      protected getMappingDriver () {
         return 'smtp'
       }
 
@@ -116,8 +187,8 @@ test.group('Manager', () => {
     }
 
     const mail = new Mail({})
-    const driver = mail.driver('smtp')
-    const driver1 = mail.driver('smtp')
+    const driver = mail.use('smtp')
+    const driver1 = mail.use('smtp')
     assert.deepEqual(driver, driver1)
   })
 
@@ -133,9 +204,16 @@ test.group('Manager', () => {
     }
 
     class Mail extends Manager<Mailable> {
-      protected $cacheDrivers = true
-      protected getDefaultDriverName () {
+      protected $cacheMappings = true
+      protected getDefaultMappingName () {
         return 'smtp'
+      }
+      protected getMappingConfig () {
+        return {}
+      }
+
+      protected getMappingDriver () {
+        return 'ses'
       }
     }
 
@@ -145,8 +223,8 @@ test.group('Manager', () => {
       return new Ses()
     })
 
-    const driver = mail.driver('ses')
-    const driver1 = mail.driver('ses')
+    const driver = mail.use('ses')
+    const driver1 = mail.use('ses')
     assert.deepEqual(driver, driver1)
   })
 })

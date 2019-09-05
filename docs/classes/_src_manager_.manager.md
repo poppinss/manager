@@ -2,7 +2,7 @@
 
 [Globals](../README.md) › ["src/Manager"](../modules/_src_manager_.md) › [Manager](_src_manager_.manager.md)
 
-# Class: Manager <**DriverContract, DriversList, DefaultDriver**>
+# Class: Manager <**DriverContract, MappingsList, DefaultItem**>
 
 Manager class implements the Builder pattern to make instance of similar
 implementations using a fluent API vs importing each class by hand.
@@ -14,9 +14,9 @@ This module is used extensively in AdonisJs. For example: `Mail`, `Sessions`,
 
 ▪ **DriverContract**: *any*
 
-▪ **DriversList**: *object*
+▪ **MappingsList**: *object*
 
-▪ **DefaultDriver**: *DriverContract*
+▪ **DefaultItem**: *DriverContract*
 
 ## Hierarchy
 
@@ -24,7 +24,7 @@ This module is used extensively in AdonisJs. For example: `Mail`, `Sessions`,
 
 ## Implements
 
-* [ManagerContract](../interfaces/_src_contracts_.managercontract.md)‹DriverContract, DriversList, DefaultDriver›
+* [ManagerContract](../interfaces/_src_contracts_.managercontract.md)‹DriverContract, MappingsList, DefaultItem›
 
 ## Index
 
@@ -34,14 +34,16 @@ This module is used extensively in AdonisJs. For example: `Mail`, `Sessions`,
 
 ### Properties
 
-* [$cacheDrivers](_src_manager_.manager.md#protected-abstract-$cachedrivers)
+* [$cacheMappings](_src_manager_.manager.md#protected-abstract-$cachemappings)
 * [$container](_src_manager_.manager.md#protected-$container)
 
 ### Methods
 
-* [driver](_src_manager_.manager.md#driver)
 * [extend](_src_manager_.manager.md#extend)
-* [getDefaultDriverName](_src_manager_.manager.md#protected-abstract-getdefaultdrivername)
+* [getDefaultMappingName](_src_manager_.manager.md#protected-abstract-getdefaultmappingname)
+* [getMappingConfig](_src_manager_.manager.md#protected-abstract-getmappingconfig)
+* [getMappingDriver](_src_manager_.manager.md#protected-abstract-getmappingdriver)
+* [use](_src_manager_.manager.md#use)
 
 ## Constructors
 
@@ -59,11 +61,11 @@ Name | Type |
 
 ## Properties
 
-### `Protected` `Abstract` $cacheDrivers
+### `Protected` `Abstract` $cacheMappings
 
-• **$cacheDrivers**: *boolean*
+• **$cacheMappings**: *boolean*
 
-Whether or not to cache drivers
+Whether or not to cache mappings
 
 ___
 
@@ -72,45 +74,6 @@ ___
 • **$container**: *any*
 
 ## Methods
-
-###  driver
-
-▸ **driver**<**K**>(`name`: K): *DriversList[K]*
-
-Returns the instance of a given driver. If `name` is not defined
-the default driver will be resolved.
-
-**Type parameters:**
-
-▪ **K**: *keyof DriversList*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`name` | K |
-
-**Returns:** *DriversList[K]*
-
-▸ **driver**(`name`: string): *DriverContract*
-
-*Implementation of [ManagerContract](../interfaces/_src_contracts_.managercontract.md)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`name` | string |
-
-**Returns:** *DriverContract*
-
-▸ **driver**(): *DefaultDriver*
-
-*Implementation of [ManagerContract](../interfaces/_src_contracts_.managercontract.md)*
-
-**Returns:** *DefaultDriver*
-
-___
 
 ###  extend
 
@@ -137,11 +100,83 @@ Name | Type |
 
 ___
 
-### `Protected` `Abstract` getDefaultDriverName
+### `Protected` `Abstract` getDefaultMappingName
 
-▸ **getDefaultDriverName**(): *string*
+▸ **getDefaultMappingName**(): *string*
 
-Getting the default driver name, incase a named driver
-is not fetched
+Getting the default mapping name, incase a mapping
+is not defined
 
 **Returns:** *string*
+
+___
+
+### `Protected` `Abstract` getMappingConfig
+
+▸ **getMappingConfig**(`mappingName`: string): *any | undefined*
+
+Getting config for the mapping. It is required for making
+extended drivers
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`mappingName` | string |
+
+**Returns:** *any | undefined*
+
+___
+
+### `Protected` `Abstract` getMappingDriver
+
+▸ **getMappingDriver**(`mappingName`: string): *string | undefined*
+
+Getting the driver name for the mapping
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`mappingName` | string |
+
+**Returns:** *string | undefined*
+
+___
+
+###  use
+
+▸ **use**<**K**>(`name`: K): *MappingsList[K]*
+
+Returns the instance of a given driver. If `name` is not defined
+the default driver will be resolved.
+
+**Type parameters:**
+
+▪ **K**: *keyof MappingsList*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`name` | K |
+
+**Returns:** *MappingsList[K]*
+
+▸ **use**(`name`: string): *DriverContract*
+
+*Implementation of [ManagerContract](../interfaces/_src_contracts_.managercontract.md)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`name` | string |
+
+**Returns:** *DriverContract*
+
+▸ **use**(): *DefaultItem*
+
+*Implementation of [ManagerContract](../interfaces/_src_contracts_.managercontract.md)*
+
+**Returns:** *DefaultItem*

@@ -22,29 +22,42 @@ import { ManagerContract } from './contracts'
  */
 export abstract class Manager<
   DriverContract extends any,
-  DriversList extends { [key: string]: DriverContract } = { [key: string]: DriverContract },
-  DefaultDriver extends DriverContract = DriverContract,
-> implements ManagerContract<DriverContract, DriversList, DefaultDriver> {
+  MappingsList extends { [key: string]: DriverContract } = { [key: string]: DriverContract },
+  DefaultItem extends DriverContract = DriverContract,
+> implements ManagerContract<DriverContract, MappingsList, DefaultItem> {
   /**
-   * Drivers cache (if caching is enabled)
+   * Mappings cache (if caching is enabled)
    */
-  private _driversCache = {}
+  private _mappingsCache: Map<string, DriverContract> = new Map()
 
   /**
    * List of drivers added at runtime
    */
-  private _extendedDrivers: { [key: string]: (container: any) => DriverContract } = {}
+  private _extendedDrivers: {
+    [key: string]: (container: any, mappingName: string, config: any) => DriverContract,
+  } = {}
 
   /**
-   * Whether or not to cache drivers
+   * Whether or not to cache mappings
    */
-  protected abstract $cacheDrivers: boolean
+  protected abstract $cacheMappings: boolean
 
   /**
-   * Getting the default driver name, incase a named driver
-   * is not fetched
+   * Getting the default mapping name, incase a mapping
+   * is not defined
    */
-  protected abstract getDefaultDriverName (): string
+  protected abstract getDefaultMappingName (): string
+
+  /**
+   * Getting config for the mapping. It is required for making
+   * extended drivers
+   */
+  protected abstract getMappingConfig (mappingName: string): any | undefined
+
+  /**
+   * Getting the driver name for the mapping
+   */
+  protected abstract getMappingDriver (mappingName: string): string | undefined
 
   constructor (protected $container: any) {
   }
@@ -53,31 +66,26 @@ export abstract class Manager<
    * Returns the value saved inside cache, this method will check for
    * `cacheDrivers` attribute before entertaining the cache
    */
-  private _getCachedDriver (name: string): DriverContract | null {
-    if (this.$cacheDrivers && this._driversCache[name]) {
-      return this._driversCache[name]
-    }
-
-    return null
+  private _getFromCache (name: string): DriverContract | null {
+    return this._mappingsCache.get(name) || null
   }
 
   /**
    * Saves value to the cache with the driver name. This method will check for
    * `cacheDrivers` attribute before entertaining the cache.
    */
-  private _saveDriverToCache (name: string, value: DriverContract): void {
-    if (this.$cacheDrivers) {
-      this._driversCache[name] = value
+  private _saveToCache (name: string, value: DriverContract): void {
+    if (this.$cacheMappings) {
+      this._mappingsCache.set(name, value)
     }
   }
 
   /**
    * Make the extended driver instance and save it to cache (if enabled)
    */
-  private _makeExtendedDriver (name: string): DriverContract {
-    const value = this._extendedDrivers[name](this.$container)
-    this._saveDriverToCache(name, value)
-
+  private _makeExtendedDriver (mappingName: string, driver: string, config: any): DriverContract {
+    const value = this._extendedDrivers[driver](this.$container, mappingName, config)
+    this._saveToCache(mappingName, value)
     return value
   }
 
@@ -88,19 +96,18 @@ export abstract class Manager<
    * For example: `stmp` as the driver name will look for `createSmtp`
    * method on the parent class.
    */
-  private _makeDriver (name: string): DriverContract {
-    const driverCreatorName = `create${name.replace(/^\w|-\w/g, (g) => g.replace(/^-/, '').toUpperCase())}`
+  private _makeDriver (mappingName: string, driver: string, config: any): DriverContract {
+    const driverCreatorName = `create${driver.replace(/^\w|-\w/g, (g) => g.replace(/^-/, '').toUpperCase())}`
 
     /**
      * Raise error when the parent class doesn't implement the function
      */
     if (typeof (this[driverCreatorName]) !== 'function') {
-      throw new Error(`${name} driver is not supported by ${this.constructor.name}`)
+      throw new Error(`${mappingName} driver is not supported by ${this.constructor.name}`)
     }
 
-    const value = this[driverCreatorName]()
-    this._saveDriverToCache(name, value)
-
+    const value = this[driverCreatorName](mappingName, config)
+    this._saveToCache(mappingName, value)
     return value
   }
 
@@ -108,24 +115,38 @@ export abstract class Manager<
    * Returns the instance of a given driver. If `name` is not defined
    * the default driver will be resolved.
    */
-  public driver<K extends keyof DriversList> (name: K): DriversList[K]
-  public driver (name: string): DriverContract
-  public driver (): DefaultDriver
-  public driver<K extends keyof DriversList> (
+  public use<K extends keyof MappingsList> (name: K): MappingsList[K]
+  public use (name: string): DriverContract
+  public use (): DefaultItem
+  public use<K extends keyof MappingsList> (
     name?: K | string,
-  ): DriversList[K] | DriverContract | DefaultDriver {
-    name = (name || this.getDefaultDriverName()) as string
+  ): MappingsList[K] | DriverContract | DefaultItem {
+    name = (name || this.getDefaultMappingName()) as string
 
-    const cached = this._getCachedDriver(name)
+    const cached = this._getFromCache(name)
     if (cached) {
       return cached
     }
 
-    if (this._extendedDrivers[name]) {
-      return this._makeExtendedDriver(name)
+    /**
+     * Ensure that driver exists for a given mapping
+     */
+    const driver = this.getMappingDriver(name)
+    if (!driver) {
+      throw new Error(`Make sure to define driver for ${name} mapping`)
     }
 
-    return this._makeDriver(name)
+    /**
+     * Making the extended driver
+     */
+    if (this._extendedDrivers[driver]) {
+      return this._makeExtendedDriver(name, driver, this.getMappingConfig(name))
+    }
+
+    /**
+     * Making the predefined driver
+     */
+    return this._makeDriver(name, driver, this.getMappingConfig(name))
   }
 
   /**
