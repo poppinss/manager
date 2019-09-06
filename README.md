@@ -18,7 +18,7 @@ mail.use('smtp').send()
 hash.use('argon2').hash('')
 ```
 
-The `use` method here constructs the driver for the mapping defined in the config file with the ability to cache the constructed drivers and add new using the `extend` API.
+The `use` method here constructs the driver for the mapping defined in the config file with the ability to cache the constructed drivers and add new drivers using the `extend` API.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -171,7 +171,7 @@ In order for intellisense to work, you have do some ground work of defining addi
 
 ### Driver interface
 
-The first thing, you must have in place is the interface that every driver must adhere to.
+The first thing you must have in place is the interface that every driver adheres to.
 
 ```ts
 interface MailDriverContract {
