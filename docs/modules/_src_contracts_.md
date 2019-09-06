@@ -12,13 +12,24 @@
 
 ### Type aliases
 
-* [ExtractMappingsList](_src_contracts_.md#extractmappingslist)
+* [ExtractConfig](_src_contracts_.md#extractconfig)
+* [ExtractImplementations](_src_contracts_.md#extractimplementations)
 
 ## Type aliases
 
-###  ExtractMappingsList
+###  ExtractConfig
 
-Ƭ **ExtractMappingsList**: *object*
+Ƭ **ExtractConfig**: *object*
+
+Extracts and builds a list of mappings implementation
+
+#### Type declaration:
+
+___
+
+###  ExtractImplementations
+
+Ƭ **ExtractImplementations**: *object*
 
 Extracts and builds a list of mappings implementation
 

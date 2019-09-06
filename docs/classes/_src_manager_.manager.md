@@ -88,13 +88,15 @@ is the responsibility of the callback function
 
 ▪ **callback**: *function*
 
-▸ (`container`: any): *DriverContract*
+▸ (`container`: any, `mappingName`: string, `config`: any): *DriverContract*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `container` | any |
+`mappingName` | string |
+`config` | any |
 
 **Returns:** *void*
 
