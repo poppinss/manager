@@ -153,7 +153,10 @@ export abstract class Manager<
    * Extend by adding new driver. The compositon of driver
    * is the responsibility of the callback function
    */
-  public extend (name: string, callback: (container: any) => DriverContract) {
+  public extend (
+    name: string,
+    callback: (container: any, mappingName: string, config: any) => DriverContract,
+  ) {
     this._extendedDrivers[name] = callback
   }
 }

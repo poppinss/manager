@@ -3,30 +3,47 @@
 </div>
 
 # Manager/Builder pattern
-This module exposes a class making it easier to implement builder pattern to your classes.
+> Abstract class to incapsulate the behavior of constructing and re-using named objects.
 
 [![circleci-image]][circleci-url] [![npm-image]][npm-url] ![][typescript-image] [![license-image]][license-url]
+
+The module is used heavily by AdonisJs to build it's driver based features for components like `hash`, `mail`, `auth`, `social auth` and so on.
+
+If you are a user of AdonisJs, then you will be familiar with the following API.
+
+```ts
+mail.use('smtp').send()
+
+// or
+hash.use('argon2').hash('')
+```
+
+The `use` method here constructs the driver for the mapping defined in the config file with the ability to cache the constructed drivers and add new using the `extend` API.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of contents
 
+- [Note](#note)
 - [Usage](#usage)
-- [How it works?](#how-it-works)
-    - [Drivers](#drivers)
-    - [Session main class](#session-main-class)
-    - [Usage](#usage-1)
-- [Using Manager class](#using-manager-class)
-- [Adding drivers from outside](#adding-drivers-from-outside)
-- [Autocomplete drivers list](#autocomplete-drivers-list)
-- [Drivers types](#drivers-types)
+- [Extending drivers](#extending-drivers)
+- [What is container?](#what-is-container)
+- [Typescript types](#typescript-types)
+  - [Driver interface](#driver-interface)
+  - [`use` method intellisense](#use-method-intellisense)
+    - [Typed config](#typed-config)
+    - [Updating mapping list generic for Manager](#updating-mapping-list-generic-for-manager)
 - [API Docs](#api-docs)
 - [Maintainers](#maintainers)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## Note
+The API for `2.x.x` is completely different from `1.x.x`, since the newer version supports multiple mappings of a single driver. [Click here](https://github.com/poppinss/manager/tree/v1.1.4) to check docs for older version.
+
 ## Usage
-Install the package from npm as follows:
+
+Install the package from npm registry as follows:
 
 ```sh
 npm i @poppinss/manager
@@ -35,121 +52,236 @@ npm i @poppinss/manager
 yarn add @poppinss/manager
 ```
 
-and then import it as follows. Check [How it works](#how-it-works) section for complete docs
+Let's imagine we are building a mailer (with dummy implementation) that supports multiple drivers and each driver can be used for multiple times. Example config for same
 
-```ts
-import { Manager, ManagerContract } from '@poppinss/manager'
-```
-
-## How it works?
-[Builder pattern](https://dzone.com/articles/design-patterns-the-builder-pattern) is a way to compose objects by hiding most of their complexities. Similarly, the Manager pattern also manages the lifecycle of those objects, after composing them.
-
-AdonisJs heavily makes use of this pattern in modules like `Mail`, `Auth`, `Session` and so on, where you can switch between multiple drivers, without realizing the amount of work done behind the scenes.
-
-Let's see how the driver's based approach works without the Manager pattern.
-
-#### Drivers
-```ts
-class SessionRedisDriver {
-  public write () {}
-  public read () {}
-}
-
-class SessionFileDriver {
-  public write () {}
-  public read () {}
-}
-```
-
-#### Session main class
-```ts
-class Session {
-  constructor (private _driver) {
-  }
-
-  put () {
-    this._driver.put()
+```js
+{
+  mailer: 'transactional',
+  
+  mailers: {
+    transactional: {
+      👇 // driver is important
+      driver: 'smtp',
+      host: '',
+      user: '',
+      password: ''
+    },
+    
+    promotional: {
+      driver: 'mailchimp',
+      apiKey: ''
+    }
   }
 }
 ```
 
-#### Usage
-Now, you can use it as follows.
+Our module supports two drivers `smtp` and `mailchimp` and here's how we can construct them.
 
 ```ts
-const file = new SessionFileDriver()
-const session = new Session(file)
-session.put('')
+class SmtpDriver {
+  constructor (config) {}
+  
+  send () {}
+}
 ```
 
-The above example is very simple and may feel fine at first glance. However, you may face following challenges.
+```ts
+class MailchimpDriver {
+  constructor (config) {}
+  
+  send () {}
+}
+```
 
-1. It is not easy to switch drivers, since you have to manually re-create the driver and then create instance of the session class.
-2. If you want to use singleton instances, then you need to wrap all this code inside a seperate file, that exports the singleton.
-3. If creating a driver has more dependencies, then you will have to construct all those dependencies by hand.
-
-## Using Manager class
-Continuing to the same example, let's create a Manager class that abstracts away all of this manual boilerplate.
+The consumer of our code can import and use these drivers manually by constructing a new instance every time. However, we can improve the developer experience, by creating the following manager class.
 
 ```ts
 import { Manager } from '@poppinss/manager'
 
-class SessionManager extends Manager<Session> {
-  protected getDefaultDriverName () {
-    return 'file'
+class Mailer extends Manager {
+  constructor (container, private _config) {
+    super(container)
+  }
+ 
+  protected $cacheMappings = true
+  
+  protected getDefaultMappingName (): string {
+    return this._config.mailer
   }
 
-  // Create singleton instances and re-use them
-  protected $cacheDrivers = true
-
-  protected createFile () {
-    return new Session(new SessionFileDriver())
+  protected getMappingConfig (name): any {
+    return this._config.mailers[name]
   }
 
-  protected createRedis () {
-    return new Session(new SessionRedisDriver())
+  protected getMappingDriver (name): any {
+    return this._config.mailers[name].driver
+  }
+  
+  protected createSmtp (name, config) {
+    return new Smtp(config)
+  }
+
+  protected createMailchimp (name, config) {
+    return new MailchimpDriver(config)
   }
 }
 ```
 
-and now, you can use it as follows.
+The `Manager` class forces the parent class to define some of the required methods/properties.
+
+- **$cacheMappings**: When set to true, the manager will internally cache the instance of drivers and will re-use them.
+- **getDefaultMappingName**: The name of the default mapping. In this case, it is the name of the `mailer` set in the config
+- **getMappingDriver**: Returning the config for a mapping. We pull it from the `mailers` object defined in the config.
+- **getMappingDriver**: Returning the driver for a mapping inside config.
+
+The other two methods `createSmtp` and `createMailchimp` are the methods invoked when the end user will access a driver. This is how it works.
 
 ```ts
-const session = new SessionManager()
-session.driver('file')      // redis instance
-session.driver('redis')     // file instance
+const mailer = new Mailer({}, config)
+mailer.use('smtp').send()
 ```
 
-## Adding drivers from outside
-Also, the session manager can be extended to add more dynamic drivers. Think of accepting plugins to add drivers.
+The `mailer.use('transactional')` will invoke `createSmtp` as part of the following convention.
+
+- `create` + `PascalCaseDriverName` 
+- `create` + `Smtp` = `createSmtp`
+- `create` + `Mailchimp` = `createMailchimp`
+
+> **NOTE**: You need one method for each driver and not the mapping. The mapping names can be anything the user wants to keep in their config file.
+
+## Extending drivers
+
+The manager class also exposes the API to add new drivers from outside in and this is done using the `extend`  method.
 
 ```ts
-const session = new SessionManager()
-session.extend('mongo', () => {
-  return new SessionMongoDriver()
+mailer.extend('postmark', (container, name, config) => {
+  return new Postmark(config)
 })
-
-session.driver('mongo') // MongoDriver
 ```
 
-## Autocomplete drivers list
-Also, you can pass a union to the `Manager` constructor and it will typehint the list of drivers for you.
+## What is container?
+
+The `Manager` class needs a container value, which is then passed to the `extended` drivers. This can be anything from application state to an empty object. 
+
+In case of AdonisJs, it is the instance of the IoC container, so that the outside world (extended drivers) can pull dependencies from the container.
+
+## Typescript types
+
+In order for intellisense to work, you have do some ground work of defining additional types. This in-fact is a common theme with static languages, that you have to rely on loose coupling when creating or using extensible objects.
+
+### Driver interface
+
+The first thing, you must have in place is the interface that every driver must adhere to.
 
 ```ts
-class SessionManager extends Manager<
-  Session,
-  { file: SessionFileDriver, redis: SessionRedisDriver },
+interface MailDriverContract {
+  send (): void
+}
+```
+
+And then pass it as a generic to the `Manager` constructor
+
+```ts
+class Mailer extends Manager<MailDriverContract> {
+  // rest of the code
+}
+```
+
+Now, `extend` method will ensure that all drivers adhere to the `‌MailDriverContract`.
+
+### `use` method intellisense
+
+Currently the output of `use` method will be typed to `MailDriverContract` and not the actual implementation class. This is fine, **when all drivers have the same properties, methods and output**. However, you can define a list of mappings as follows
+
+```ts
+type MappingsList = {
+  transactional: SmtpDriver,
+  promotional: MailchimpDriver,
+}
+```
+
+And then pass this mapping as a 2nd argument to the `Manager` constructor.
+
+```ts
+class Mailer extends Manager<
+  MailDriverContract,
+  MappingsList
 > {
 }
-
-new SessionManager
-  .driver('') // typehints 'file' and 'redis'
 ```
 
-## Drivers types
-Along with the runtime code to extend and fetch drivers, we also ship the types to deal with static side of things as well.
+The `use` method will now return the concrete type. You can also use this same mapping to enforce correct configuration.
 
-Since the process of having extensible drivers with type information requires some complex types structure, we recommend you to look at [example/index.ts](example/index.ts) file for a complete example.
+```ts
+type SmtpConfig = {
+  driver: 'smtp',
+  host: string,
+  user: string,
+  password: string,
+  port?: number,
+}
+
+type MailchimpConfig = {
+  driver: 'mailchimp',
+  apiKey: string,
+}
+
+type MappingsList = {
+  transactional: {
+    config: SmtpConfig,
+    implementation: SmtpDriver,
+  },
+  promotional: {
+    config: MailchimpConfig,
+    implementation: MailchimpDriver,
+  },
+}
+```
+
+The master `MappingsList` will ensure that static types and the configuration is always referring to the same driver instance.
+
+#### Typed config
+
+```ts
+import { ExtractConfig } from '@poppinss/manager'
+
+
+type Config<Mailer extends keyof MappingsList> = {
+  mailer: Mailer,
+  mailers: ExtractConfig<MappingsList>,
+}
+
+const config: Config<'transactional'> = {
+  mailer: 'transactional',
+  mailers: {
+    transactional: {
+      driver: 'smtp',
+      host: '',
+      user: '',
+      password: '',
+    },
+
+    promotional: {
+      driver: 'mailchimp',
+      apiKey: '',
+    },
+  },
+}
+```
+
+#### Updating mapping list generic for Manager
+
+```ts
+import { ExtractImplementations, Manager } from '@poppinss/manager'
+
+class Mailer extends Manager<
+  MailDriverContract,
+  ExtractImplementations<MappingsList>
+> {
+}
+```
+
+Finally, you have runtime functionality to switch between multiple mailers and also have type safety for same.
 
 ## API Docs
 Following are the autogenerated files via Typedoc

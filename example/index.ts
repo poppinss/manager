@@ -1,87 +1,109 @@
 import {
-  ExtractMappingsList,
+  ExtractImplementations,
+  ExtractConfig,
 } from '../src/contracts'
 
 import { Manager } from '../src/Manager'
 
-/**
- * Each driver must adhere to this contract
- */
-interface SessionDriverContract {
-  write (): void
-  read (): string
+interface MailDriverContract {
+  send (): void
 }
 
-/**
- * Redis driver
- */
-class SessionRedisDriver implements SessionDriverContract {
-  public write () {}
-  public read () {
-    return 'foo'
-  }
+type SmtpConfig = {
+  driver: 'smtp',
+  host: string,
+  user: string,
+  password: string,
+  port?: number,
 }
 
-/**
- * File driver
- */
-class SessionFileDriver implements SessionDriverContract {
-  public write () {}
-  public read () {
-    return 'foo'
-  }
+type MailchimpConfig = {
+  driver: 'mailchimp',
+  apiKey: string,
 }
 
-class SessionManager<
-  Config extends { mapping: keyof Mappings },
-> extends Manager<
-  SessionDriverContract,
-  ExtractMappingsList<Mappings>,
-  Mappings[Config['mapping']]['implementation']
+type MappingsList = {
+  transactional: {
+    config: SmtpConfig,
+    implementation: SmtpDriver,
+  },
+  promotional: {
+    config: MailchimpConfig,
+    implementation: MailchimpDriver,
+  },
+}
+
+class SmtpDriver {
+  constructor (public config: any) {}
+  public send () {}
+}
+
+class MailchimpDriver {
+  constructor (public config: any) {}
+  public send () {}
+}
+
+class Mailer extends Manager<
+  MailDriverContract,
+  ExtractImplementations<MappingsList>
 > {
-  constructor (public config: Config) {
-    super({})
+  constructor (container: any, private _config: any) {
+    super(container)
   }
 
-  protected $cacheMappings = false
+  protected $cacheMappings = true
 
   protected getDefaultMappingName (): string {
-    return this.config.mapping
+    return this._config.mailer
   }
 
   protected getMappingConfig (name: string): any {
-    return this.config[name].config
+    return this._config.mailers[name]
   }
 
   protected getMappingDriver (name: string): any {
-    return this.config[name].driver
+    return this._config.mailers[name].driver
+  }
+
+  protected createSmtp (_name: string, config: any) {
+    return new SmtpDriver(config)
+  }
+
+  protected createMailchimp (_name: string, config: any) {
+    return new MailchimpDriver(config)
   }
 }
 
-type Mappings = {
-  file: {
-    driver: 'file',
-    implementation: SessionFileDriver,
-  },
-  redis: {
-    driver: 'redis',
-    implementation: SessionRedisDriver,
-  },
+type Config<Mailer extends keyof MappingsList> = {
+  mailer: Mailer,
+  mailers: ExtractConfig<MappingsList>,
 }
 
-type MappingsToConfig = { [P in keyof Mappings]: Omit<Mappings[P], 'implementation'> }
-
-const config: { mapping: 'file', mappings: MappingsToConfig } = {
-  mapping: 'file',
-  mappings: {
-    file: {
-      driver: 'file',
+const config: Config<'transactional'> = {
+  mailer: 'transactional',
+  mailers: {
+    transactional: {
+      driver: 'smtp',
+      host: '',
+      user: '',
+      password: '',
     },
-    redis: {
-      driver: 'redis',
+
+    promotional: {
+      driver: 'mailchimp',
+      apiKey: '',
     },
   },
 }
 
-const session = new SessionManager(config)
-session.use()
+const mailer = new Mailer({}, config)
+class Postmark {
+  constructor (public config: any) {}
+  public send () {}
+}
+
+mailer.extend('postmark', (_container, _name, config) => {
+  return new Postmark(config)
+})
+
+// mailer.use('')
