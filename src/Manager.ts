@@ -22,13 +22,14 @@ import { ManagerContract } from './contracts'
  */
 export abstract class Manager<
   DriverContract extends any,
-  MappingsList extends { [key: string]: DriverContract } = { [key: string]: DriverContract },
-  DefaultItem extends DriverContract = DriverContract,
-> implements ManagerContract<DriverContract, MappingsList, DefaultItem> {
+  ReturnValueContract extends any = DriverContract,
+  MappingsList extends { [key: string]: ReturnValueContract } = { [key: string]: ReturnValueContract },
+  DefaultItem extends ReturnValueContract = ReturnValueContract,
+> implements ManagerContract<DriverContract, ReturnValueContract, MappingsList, DefaultItem> {
   /**
    * Mappings cache (if caching is enabled)
    */
-  private _mappingsCache: Map<string, DriverContract> = new Map()
+  private _mappingsCache: Map<string, ReturnValueContract> = new Map()
 
   /**
    * List of drivers added at runtime
@@ -59,6 +60,13 @@ export abstract class Manager<
    */
   protected abstract getMappingDriver (mappingName: string): string | undefined
 
+  /**
+   * Optional method to wrap the driver response
+   */
+  protected wrapDriverResponse (value: DriverContract): ReturnValueContract {
+    return value as unknown as ReturnValueContract
+  }
+
   constructor (protected $container: any) {
   }
 
@@ -66,7 +74,7 @@ export abstract class Manager<
    * Returns the value saved inside cache, this method will check for
    * `cacheDrivers` attribute before entertaining the cache
    */
-  private _getFromCache (name: string): DriverContract | null {
+  private _getFromCache (name: string): ReturnValueContract | null {
     return this._mappingsCache.get(name) || null
   }
 
@@ -74,7 +82,7 @@ export abstract class Manager<
    * Saves value to the cache with the driver name. This method will check for
    * `cacheDrivers` attribute before entertaining the cache.
    */
-  private _saveToCache (name: string, value: DriverContract): void {
+  private _saveToCache (name: string, value: ReturnValueContract): void {
     if (this.$cacheMappings) {
       this._mappingsCache.set(name, value)
     }
@@ -83,8 +91,10 @@ export abstract class Manager<
   /**
    * Make the extended driver instance and save it to cache (if enabled)
    */
-  private _makeExtendedDriver (mappingName: string, driver: string, config: any): DriverContract {
-    const value = this._extendedDrivers[driver](this.$container, mappingName, config)
+  private _makeExtendedDriver (mappingName: string, driver: string, config: any): ReturnValueContract {
+    const value = this.wrapDriverResponse(
+      this._extendedDrivers[driver](this.$container, mappingName, config),
+    )
     this._saveToCache(mappingName, value)
     return value
   }
@@ -96,7 +106,7 @@ export abstract class Manager<
    * For example: `stmp` as the driver name will look for `createSmtp`
    * method on the parent class.
    */
-  private _makeDriver (mappingName: string, driver: string, config: any): DriverContract {
+  private _makeDriver (mappingName: string, driver: string, config: any): ReturnValueContract {
     const driverCreatorName = `create${driver.replace(/^\w|-\w/g, (g) => g.replace(/^-/, '').toUpperCase())}`
 
     /**
@@ -106,7 +116,7 @@ export abstract class Manager<
       throw new Error(`${mappingName} driver is not supported by ${this.constructor.name}`)
     }
 
-    const value = this[driverCreatorName](mappingName, config)
+    const value = this.wrapDriverResponse(this[driverCreatorName](mappingName, config))
     this._saveToCache(mappingName, value)
     return value
   }
@@ -116,11 +126,11 @@ export abstract class Manager<
    * the default driver will be resolved.
    */
   public use<K extends keyof MappingsList> (name: K): MappingsList[K]
-  public use (name: string): DriverContract
+  public use (name: string): ReturnValueContract
   public use (): DefaultItem
   public use<K extends keyof MappingsList> (
     name?: K | string,
-  ): MappingsList[K] | DriverContract | DefaultItem {
+  ): MappingsList[K] | ReturnValueContract | DefaultItem {
     name = (name || this.getDefaultMappingName()) as string
 
     const cached = this._getFromCache(name)

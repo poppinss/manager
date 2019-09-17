@@ -13,8 +13,9 @@
 
 export interface ManagerContract<
   DriverContract extends any,
-  MappingsList extends { [key: string]: DriverContract } = { [key: string]: DriverContract },
-  DefaultItem extends DriverContract = DriverContract,
+  ReturnValueContract extends any = DriverContract,
+  MappingsList extends { [key: string]: ReturnValueContract } = { [key: string]: ReturnValueContract },
+  DefaultItem extends ReturnValueContract = ReturnValueContract,
 > {
   use<K extends keyof MappingsList> (name: K): MappingsList[K],
   use (name: string): DefaultItem,
