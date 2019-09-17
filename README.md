@@ -205,6 +205,7 @@ And then pass this mapping as a 2nd argument to the `Manager` constructor.
 ```ts
 class Mailer extends Manager<
   MailDriverContract,
+  MailDriverContract,
   MappingsList
 > {
 }
@@ -275,6 +276,7 @@ const config: Config<'transactional'> = {
 import { ExtractImplementations, Manager } from '@poppinss/manager'
 
 class Mailer extends Manager<
+  MailDriverContract,
   MailDriverContract,
   ExtractImplementations<MappingsList>
 > {
