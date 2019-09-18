@@ -60,13 +60,6 @@ export abstract class Manager<
    */
   protected abstract getMappingDriver (mappingName: string): string | undefined
 
-  /**
-   * Optional method to wrap the driver response
-   */
-  protected wrapDriverResponse (value: DriverContract): ReturnValueContract {
-    return value as unknown as ReturnValueContract
-  }
-
   constructor (protected $container: any) {
   }
 
@@ -93,6 +86,7 @@ export abstract class Manager<
    */
   private _makeExtendedDriver (mappingName: string, driver: string, config: any): ReturnValueContract {
     const value = this.wrapDriverResponse(
+      mappingName,
       this._extendedDrivers[driver](this.$container, mappingName, config),
     )
     this._saveToCache(mappingName, value)
@@ -116,9 +110,16 @@ export abstract class Manager<
       throw new Error(`${mappingName} driver is not supported by ${this.constructor.name}`)
     }
 
-    const value = this.wrapDriverResponse(this[driverCreatorName](mappingName, config))
+    const value = this.wrapDriverResponse(mappingName, this[driverCreatorName](mappingName, config))
     this._saveToCache(mappingName, value)
     return value
+  }
+
+  /**
+   * Optional method to wrap the driver response
+   */
+  protected wrapDriverResponse (_mappingName: string, value: DriverContract): ReturnValueContract {
+    return value as unknown as ReturnValueContract
   }
 
   /**
