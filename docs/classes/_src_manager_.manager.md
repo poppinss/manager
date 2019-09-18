@@ -221,7 +221,7 @@ ___
 
 ### `Protected` wrapDriverResponse
 
-▸ **wrapDriverResponse**(`value`: DriverContract): *ReturnValueContract*
+▸ **wrapDriverResponse**(`_mappingName`: string, `value`: DriverContract): *ReturnValueContract*
 
 Optional method to wrap the driver response
 
@@ -229,6 +229,7 @@ Optional method to wrap the driver response
 
 Name | Type |
 ------ | ------ |
+`_mappingName` | string |
 `value` | DriverContract |
 
 **Returns:** *ReturnValueContract*
