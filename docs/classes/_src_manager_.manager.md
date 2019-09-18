@@ -43,6 +43,7 @@ This module is used extensively in AdonisJs. For example: `Mail`, `Sessions`,
 * [getDefaultMappingName](_src_manager_.manager.md#protected-abstract-getdefaultmappingname)
 * [getMappingConfig](_src_manager_.manager.md#protected-abstract-getmappingconfig)
 * [getMappingDriver](_src_manager_.manager.md#protected-abstract-getmappingdriver)
+* [release](_src_manager_.manager.md#release)
 * [use](_src_manager_.manager.md#use)
 * [wrapDriverResponse](_src_manager_.manager.md#protected-wrapdriverresponse)
 
@@ -144,6 +145,38 @@ Name | Type |
 `mappingName` | string |
 
 **Returns:** *string | undefined*
+
+___
+
+###  release
+
+▸ **release**<**K**>(`name`: K): *void*
+
+Removes the mapping from internal cache.
+
+**Type parameters:**
+
+▪ **K**: *keyof MappingsList*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`name` | K |
+
+**Returns:** *void*
+
+▸ **release**(`name`: string): *void*
+
+*Implementation of [ManagerContract](../interfaces/_src_contracts_.managercontract.md)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`name` | string |
+
+**Returns:** *void*
 
 ___
 

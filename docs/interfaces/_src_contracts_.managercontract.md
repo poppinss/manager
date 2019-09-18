@@ -25,6 +25,7 @@
 ### Methods
 
 * [extend](_src_contracts_.managercontract.md#extend)
+* [release](_src_contracts_.managercontract.md#release)
 * [use](_src_contracts_.managercontract.md#use)
 
 ## Methods
@@ -46,6 +47,34 @@
 Name | Type |
 ------ | ------ |
 `container` | any |
+
+**Returns:** *void*
+
+___
+
+###  release
+
+▸ **release**<**K**>(`name`: K): *void*
+
+**Type parameters:**
+
+▪ **K**: *keyof MappingsList*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`name` | K |
+
+**Returns:** *void*
+
+▸ **release**(`name`: string): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`name` | string |
 
 **Returns:** *void*
 
