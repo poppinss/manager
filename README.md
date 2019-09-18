@@ -26,6 +26,7 @@ The `use` method here constructs the driver for the mapping defined in the confi
 
 - [Note](#note)
 - [Usage](#usage)
+- [Release mapping from cache](#release-mapping-from-cache)
 - [Extending drivers](#extending-drivers)
 - [What is container?](#what-is-container)
 - [Typescript types](#typescript-types)
@@ -148,6 +149,15 @@ The `mailer.use('transactional')` will invoke `createSmtp` as part of the follow
 - `create` + `Mailchimp` = `createMailchimp`
 
 > **NOTE**: You need one method for each driver and not the mapping. The mapping names can be anything the user wants to keep in their config file.
+
+
+## Release mapping from cache
+The `release` method can be used release the mappings from cache.
+
+```ts
+// Removes smtp from cache. Next call to `use('smtp')` will create a new instance
+mailer.release('smtp')
+```
 
 ## Extending drivers
 

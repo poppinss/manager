@@ -21,6 +21,9 @@ export interface ManagerContract<
   use (name: string): DefaultItem,
   use (): DefaultItem,
   extend (name: string, callback: (container: any) => DriverContract): void,
+
+  release<K extends keyof MappingsList> (name: K): void,
+  release (name: string): void,
 }
 
 /**

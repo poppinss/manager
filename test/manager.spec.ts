@@ -227,4 +227,42 @@ test.group('Manager', () => {
     const driver1 = mail.use('ses')
     assert.deepEqual(driver, driver1)
   })
+
+  test('remove mapping from cache', (assert) => {
+    class Smtp implements Mailable {
+      public name: Symbol
+
+      constructor () {
+        this.name = Symbol('smtp')
+      }
+
+      public send () {}
+    }
+
+    class Mail extends Manager<Mailable> {
+      protected $cacheMappings = true
+      protected getDefaultMappingName () {
+        return 'smtp'
+      }
+
+      protected getMappingConfig () {
+        return {}
+      }
+
+      protected getMappingDriver () {
+        return 'smtp'
+      }
+
+      public createSmtp () {
+        return new Smtp()
+      }
+    }
+
+    const mail = new Mail({})
+    mail.use('smtp')
+    assert.instanceOf(mail['_mappingsCache'].get('smtp'), Smtp)
+
+    mail.release('smtp')
+    assert.equal(mail['_mappingsCache'].size, 0)
+  })
 })

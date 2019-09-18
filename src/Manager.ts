@@ -160,6 +160,15 @@ export abstract class Manager<
   }
 
   /**
+   * Removes the mapping from internal cache.
+   */
+  public release<K extends keyof MappingsList> (name: K): void
+  public release (name: string): void
+  public release<K extends keyof MappingsList> (name: string | K): void {
+    this._mappingsCache.delete(name as string)
+  }
+
+  /**
    * Extend by adding new driver. The compositon of driver
    * is the responsibility of the callback function
    */
