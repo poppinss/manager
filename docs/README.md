@@ -1,6 +1,6 @@
-**[@poppinss/manager](README.md)**
+[@poppinss/manager](README.md)
 
-[Globals](README.md)
+# @poppinss/manager
 
 ## Index
 

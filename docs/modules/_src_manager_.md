@@ -1,6 +1,4 @@
-**[@poppinss/manager](../README.md)**
-
-[Globals](../README.md) › ["src/Manager"](_src_manager_.md)
+[@poppinss/manager](../README.md) › ["src/Manager"](_src_manager_.md)
 
 # External module: "src/Manager"
 

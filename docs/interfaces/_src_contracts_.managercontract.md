@@ -1,16 +1,16 @@
-**[@poppinss/manager](../README.md)**
+[@poppinss/manager](../README.md) › ["src/contracts"](../modules/_src_contracts_.md) › [ManagerContract](_src_contracts_.managercontract.md)
 
-[Globals](../README.md) › ["src/contracts"](../modules/_src_contracts_.md) › [ManagerContract](_src_contracts_.managercontract.md)
-
-# Interface: ManagerContract <**DriverContract, MappingsList, DefaultItem**>
+# Interface: ManagerContract <**DriverContract, ReturnValueContract, MappingsList, DefaultItem**>
 
 ## Type parameters
 
 ▪ **DriverContract**: *any*
 
+▪ **ReturnValueContract**: *any*
+
 ▪ **MappingsList**: *object*
 
-▪ **DefaultItem**: *DriverContract*
+▪ **DefaultItem**: *ReturnValueContract*
 
 ## Hierarchy
 

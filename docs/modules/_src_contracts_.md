@@ -1,6 +1,4 @@
-**[@poppinss/manager](../README.md)**
-
-[Globals](../README.md) › ["src/contracts"](_src_contracts_.md)
+[@poppinss/manager](../README.md) › ["src/contracts"](_src_contracts_.md)
 
 # External module: "src/contracts"
 

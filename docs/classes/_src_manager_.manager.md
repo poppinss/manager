@@ -1,8 +1,6 @@
-**[@poppinss/manager](../README.md)**
+[@poppinss/manager](../README.md) › ["src/Manager"](../modules/_src_manager_.md) › [Manager](_src_manager_.manager.md)
 
-[Globals](../README.md) › ["src/Manager"](../modules/_src_manager_.md) › [Manager](_src_manager_.manager.md)
-
-# Class: Manager <**DriverContract, MappingsList, DefaultItem**>
+# Class: Manager <**DriverContract, ReturnValueContract, MappingsList, DefaultItem**>
 
 Manager class implements the Builder pattern to make instance of similar
 implementations using a fluent API vs importing each class by hand.
@@ -14,9 +12,11 @@ This module is used extensively in AdonisJs. For example: `Mail`, `Sessions`,
 
 ▪ **DriverContract**: *any*
 
+▪ **ReturnValueContract**: *any*
+
 ▪ **MappingsList**: *object*
 
-▪ **DefaultItem**: *DriverContract*
+▪ **DefaultItem**: *ReturnValueContract*
 
 ## Hierarchy
 
@@ -24,7 +24,7 @@ This module is used extensively in AdonisJs. For example: `Mail`, `Sessions`,
 
 ## Implements
 
-* [ManagerContract](../interfaces/_src_contracts_.managercontract.md)‹DriverContract, MappingsList, DefaultItem›
+* [ManagerContract](../interfaces/_src_contracts_.managercontract.md)‹DriverContract, ReturnValueContract, MappingsList, DefaultItem›
 
 ## Index
 
@@ -44,6 +44,7 @@ This module is used extensively in AdonisJs. For example: `Mail`, `Sessions`,
 * [getMappingConfig](_src_manager_.manager.md#protected-abstract-getmappingconfig)
 * [getMappingDriver](_src_manager_.manager.md#protected-abstract-getmappingdriver)
 * [use](_src_manager_.manager.md#use)
+* [wrapDriverResponse](_src_manager_.manager.md#protected-wrapdriverresponse)
 
 ## Constructors
 
@@ -165,7 +166,7 @@ Name | Type |
 
 **Returns:** *MappingsList[K]*
 
-▸ **use**(`name`: string): *DriverContract*
+▸ **use**(`name`: string): *ReturnValueContract*
 
 *Implementation of [ManagerContract](../interfaces/_src_contracts_.managercontract.md)*
 
@@ -175,10 +176,26 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *DriverContract*
+**Returns:** *ReturnValueContract*
 
 ▸ **use**(): *DefaultItem*
 
 *Implementation of [ManagerContract](../interfaces/_src_contracts_.managercontract.md)*
 
 **Returns:** *DefaultItem*
+
+___
+
+### `Protected` wrapDriverResponse
+
+▸ **wrapDriverResponse**(`value`: DriverContract): *ReturnValueContract*
+
+Optional method to wrap the driver response
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`value` | DriverContract |
+
+**Returns:** *ReturnValueContract*
