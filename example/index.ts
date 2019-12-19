@@ -44,8 +44,8 @@ class MailchimpDriver {
 }
 
 class Mailer extends Manager<
-  MailDriverContract,
-  ExtractImplementations<MappingsList>
+MailDriverContract,
+ExtractImplementations<MappingsList>
 > {
   constructor (container: any, private _config: any) {
     super(container)
@@ -98,12 +98,12 @@ const config: Config<'transactional'> = {
 
 const mailer = new Mailer({}, config)
 class Postmark {
-  constructor (public config: any) {}
+  constructor (public _config: any) {}
   public send () {}
 }
 
-mailer.extend('postmark', (_container, _name, config) => {
-  return new Postmark(config)
+mailer.extend('postmark', (_container, _name, driverConfig) => {
+  return new Postmark(driverConfig)
 })
 
 // mailer.use('')
