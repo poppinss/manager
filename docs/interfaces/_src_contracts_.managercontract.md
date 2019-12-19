@@ -1,4 +1,4 @@
-[@poppinss/manager](../README.md) › ["src/contracts"](../modules/_src_contracts_.md) › [ManagerContract](_src_contracts_.managercontract.md)
+[@poppinss/manager](../README.md) › ["src/Contracts"](../modules/_src_contracts_.md) › [ManagerContract](_src_contracts_.managercontract.md)
 
 # Interface: ManagerContract <**DriverContract, ReturnValueContract, MappingsList, DefaultItem**>
 
