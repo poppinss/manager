@@ -260,10 +260,10 @@ test.group('Manager', () => {
 
     const mail = new Mail({})
     mail.use('smtp')
-    assert.instanceOf(mail['_mappingsCache'].get('smtp'), Smtp)
+    assert.instanceOf(mail['mappingsCache'].get('smtp'), Smtp)
 
     mail.release('smtp')
-    assert.equal(mail['_mappingsCache'].size, 0)
+    assert.equal(mail['mappingsCache'].size, 0)
   })
 
   test('wrap driver response to a custom object', (assert) => {
@@ -303,9 +303,9 @@ test.group('Manager', () => {
     const mail = new Mail({})
     const mailer = mail.use('smtp')
 
-    assert.deepEqual(mailer, mail['_mappingsCache'].get('smtp'))
-    assert.instanceOf(mail['_mappingsCache'].get('smtp')!.driver, Smtp)
-    assert.equal(mail['_mappingsCache'].get('smtp')!.mappingName, 'smtp')
+    assert.deepEqual(mailer, mail['mappingsCache'].get('smtp'))
+    assert.instanceOf(mail['mappingsCache'].get('smtp')!.driver, Smtp)
+    assert.equal(mail['mappingsCache'].get('smtp')!.mappingName, 'smtp')
   })
 
   test('wrap extended driver response to a custom object', (assert) => {
@@ -344,8 +344,8 @@ test.group('Manager', () => {
     })
     const mailer = mail.use('smtp')
 
-    assert.deepEqual(mailer, mail['_mappingsCache'].get('smtp'))
-    assert.instanceOf(mail['_mappingsCache'].get('smtp')!.driver, Smtp)
-    assert.equal(mail['_mappingsCache'].get('smtp')!.mappingName, 'smtp')
+    assert.deepEqual(mailer, mail['mappingsCache'].get('smtp'))
+    assert.instanceOf(mail['mappingsCache'].get('smtp')!.driver, Smtp)
+    assert.equal(mail['mappingsCache'].get('smtp')!.mappingName, 'smtp')
   })
 })

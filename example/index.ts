@@ -1,7 +1,7 @@
 import {
   ExtractImplementations,
   ExtractConfig,
-} from '../src/contracts'
+} from '../src/Contracts'
 
 import { Manager } from '../src/Manager'
 

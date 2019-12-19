@@ -12,4 +12,4 @@
 */
 
 export { Manager } from './src/Manager'
-export * from './src/contracts'
+export * from './src/Contracts'

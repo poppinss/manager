@@ -11,7 +11,7 @@
 * file that was distributed with this source code.
 */
 
-import { ManagerContract } from './contracts'
+import { ManagerContract } from './Contracts'
 
 /**
  * Manager class implements the Builder pattern to make instance of similar
@@ -29,12 +29,12 @@ export abstract class Manager<
   /**
    * Mappings cache (if caching is enabled)
    */
-  private _mappingsCache: Map<string, ReturnValueContract> = new Map()
+  private mappingsCache: Map<string, ReturnValueContract> = new Map()
 
   /**
    * List of drivers added at runtime
    */
-  private _extendedDrivers: {
+  private extendedDrivers: {
     [key: string]: (container: any, mappingName: string, config: any) => DriverContract,
   } = {}
 
@@ -67,29 +67,29 @@ export abstract class Manager<
    * Returns the value saved inside cache, this method will check for
    * `cacheDrivers` attribute before entertaining the cache
    */
-  private _getFromCache (name: string): ReturnValueContract | null {
-    return this._mappingsCache.get(name) || null
+  private getFromCache (name: string): ReturnValueContract | null {
+    return this.mappingsCache.get(name) || null
   }
 
   /**
    * Saves value to the cache with the driver name. This method will check for
    * `cacheDrivers` attribute before entertaining the cache.
    */
-  private _saveToCache (name: string, value: ReturnValueContract): void {
+  private saveToCache (name: string, value: ReturnValueContract): void {
     if (this.$cacheMappings) {
-      this._mappingsCache.set(name, value)
+      this.mappingsCache.set(name, value)
     }
   }
 
   /**
    * Make the extended driver instance and save it to cache (if enabled)
    */
-  private _makeExtendedDriver (mappingName: string, driver: string, config: any): ReturnValueContract {
+  private makeExtendedDriver (mappingName: string, driver: string, config: any): ReturnValueContract {
     const value = this.wrapDriverResponse(
       mappingName,
-      this._extendedDrivers[driver](this.$container, mappingName, config),
+      this.extendedDrivers[driver](this.$container, mappingName, config),
     )
-    this._saveToCache(mappingName, value)
+    this.saveToCache(mappingName, value)
     return value
   }
 
@@ -100,7 +100,7 @@ export abstract class Manager<
    * For example: `stmp` as the driver name will look for `createSmtp`
    * method on the parent class.
    */
-  private _makeDriver (mappingName: string, driver: string, config: any): ReturnValueContract {
+  private makeDriver (mappingName: string, driver: string, config: any): ReturnValueContract {
     const driverCreatorName = `create${driver.replace(/^\w|-\w/g, (g) => g.replace(/^-/, '').toUpperCase())}`
 
     /**
@@ -111,14 +111,14 @@ export abstract class Manager<
     }
 
     const value = this.wrapDriverResponse(mappingName, this[driverCreatorName](mappingName, config))
-    this._saveToCache(mappingName, value)
+    this.saveToCache(mappingName, value)
     return value
   }
 
   /**
    * Optional method to wrap the driver response
    */
-  protected wrapDriverResponse (_mappingName: string, value: DriverContract): ReturnValueContract {
+  protected wrapDriverResponse (_: string, value: DriverContract): ReturnValueContract {
     return value as unknown as ReturnValueContract
   }
 
@@ -134,7 +134,7 @@ export abstract class Manager<
   ): MappingsList[K] | ReturnValueContract | DefaultItem {
     name = (name || this.getDefaultMappingName()) as string
 
-    const cached = this._getFromCache(name)
+    const cached = this.getFromCache(name)
     if (cached) {
       return cached
     }
@@ -150,14 +150,14 @@ export abstract class Manager<
     /**
      * Making the extended driver
      */
-    if (this._extendedDrivers[driver]) {
-      return this._makeExtendedDriver(name, driver, this.getMappingConfig(name))
+    if (this.extendedDrivers[driver]) {
+      return this.makeExtendedDriver(name, driver, this.getMappingConfig(name))
     }
 
     /**
      * Making the predefined driver
      */
-    return this._makeDriver(name, driver, this.getMappingConfig(name))
+    return this.makeDriver(name, driver, this.getMappingConfig(name))
   }
 
   /**
@@ -166,7 +166,7 @@ export abstract class Manager<
   public release<K extends keyof MappingsList> (name: K): void
   public release (name: string): void
   public release<K extends keyof MappingsList> (name: string | K): void {
-    this._mappingsCache.delete(name as string)
+    this.mappingsCache.delete(name as string)
   }
 
   /**
@@ -177,6 +177,6 @@ export abstract class Manager<
     name: string,
     callback: (container: any, mappingName: string, config: any) => DriverContract,
   ) {
-    this._extendedDrivers[name] = callback
+    this.extendedDrivers[name] = callback
   }
 }
