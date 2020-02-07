@@ -34,8 +34,8 @@ This module is used extensively in AdonisJs. For example: `Mail`, `Sessions`,
 
 ### Properties
 
-* [$cacheMappings](_src_manager_.manager.md#protected-abstract-$cachemappings)
-* [$container](_src_manager_.manager.md#protected-$container)
+* [$cacheMappings](_src_manager_.manager.md#protected-abstract-cachemappings)
+* [$container](_src_manager_.manager.md#protected-container)
 
 ### Methods
 
