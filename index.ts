@@ -1,7 +1,3 @@
-/**
- * @module @poppinss/manager
- */
-
 /*
 * @poppinss/manager
 *
