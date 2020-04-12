@@ -1,6 +1,6 @@
 [@poppinss/manager](../README.md) › ["src/Contracts"](_src_contracts_.md)
 
-# External module: "src/Contracts"
+# Module: "src/Contracts"
 
 ## Index
 
