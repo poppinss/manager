@@ -7,7 +7,7 @@
 * file that was distributed with this source code.
 */
 
-import { ManagerContract } from './Contracts'
+import { ManagerContract, ExtendCallback } from './Contracts'
 
 /**
  * Manager class implements the Builder pattern to make instance of similar
@@ -31,7 +31,7 @@ export abstract class Manager<
    * List of drivers added at runtime
    */
   private extendedDrivers: {
-    [key: string]: (container: any, mappingName: string, config: any) => DriverContract,
+    [key: string]: ExtendCallback<DriverContract>,
   } = {}
 
   /**
@@ -56,7 +56,7 @@ export abstract class Manager<
    */
   protected abstract getMappingDriver (mappingName: string): string | undefined
 
-  constructor (protected $container: any) {
+  constructor (protected container: any) {
   }
 
   /**
@@ -83,7 +83,7 @@ export abstract class Manager<
   private makeExtendedDriver (mappingName: string, driver: string, config: any): ReturnValueContract {
     const value = this.wrapDriverResponse(
       mappingName,
-      this.extendedDrivers[driver](this.$container, mappingName, config),
+      this.extendedDrivers[driver](this.container, mappingName, config),
     )
     this.saveToCache(mappingName, value)
     return value
@@ -122,13 +122,13 @@ export abstract class Manager<
    * Returns the instance of a given driver. If `name` is not defined
    * the default driver will be resolved.
    */
-  public use<K extends keyof MappingsList> (name: K): MappingsList[K]
+  public use<K extends keyof MappingsList & string> (name: K): MappingsList[K]
   public use (name: string): ReturnValueContract
   public use (): DefaultItem
-  public use<K extends keyof MappingsList> (
+  public use<K extends keyof MappingsList & string> (
     name?: K | string,
   ): MappingsList[K] | ReturnValueContract | DefaultItem {
-    name = (name || this.getDefaultMappingName()) as string
+    name = (name || this.getDefaultMappingName())
 
     const cached = this.getFromCache(name)
     if (cached) {
@@ -159,20 +159,17 @@ export abstract class Manager<
   /**
    * Removes the mapping from internal cache.
    */
-  public release<K extends keyof MappingsList> (name: K): void
+  public release<K extends keyof MappingsList & string> (name: K): void
   public release (name: string): void
-  public release<K extends keyof MappingsList> (name: string | K): void {
-    this.mappingsCache.delete(name as string)
+  public release<K extends keyof MappingsList & string> (name: string | K): void {
+    this.mappingsCache.delete(name)
   }
 
   /**
    * Extend by adding new driver. The compositon of driver
    * is the responsibility of the callback function
    */
-  public extend (
-    name: string,
-    callback: (container: any, mappingName: string, config: any) => DriverContract,
-  ) {
+  public extend (name: string, callback: ExtendCallback<DriverContract>) {
     this.extendedDrivers[name] = callback
   }
 }

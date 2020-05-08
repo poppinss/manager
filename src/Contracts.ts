@@ -7,6 +7,18 @@
 * file that was distributed with this source code.
 */
 
+/**
+ * Shape of the extend callback
+ */
+export type ExtendCallback<Driver extends any> = (
+  container: any,
+  mappingName: string,
+  config: any,
+) => Driver
+
+/**
+ * Manager class shape
+ */
 export interface ManagerContract<
   DriverContract extends any,
   ReturnValueContract extends any = DriverContract,
@@ -16,7 +28,7 @@ export interface ManagerContract<
   use<K extends keyof MappingsList> (name: K): MappingsList[K],
   use (name: string): DefaultItem,
   use (): DefaultItem,
-  extend (name: string, callback: (container: any) => DriverContract): void,
+  extend (name: string, callback: ExtendCallback<DriverContract>): void,
 
   release<K extends keyof MappingsList> (name: K): void,
   release (name: string): void,
