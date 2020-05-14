@@ -37,13 +37,13 @@ export interface ManagerContract<
 /**
  * Extracts and builds a list of mappings implementation
  */
-export type ExtractImplementations<List extends any> = {
+export type ExtractImplementations<List extends { [key: string]: { implementation: any } }> = {
   [P in keyof List]: List[P]['implementation']
 }
 
 /**
  * Extracts and builds a list of mappings implementation
  */
-export type ExtractConfig<List extends any> = {
+export type ExtractConfig<List extends { [key: string]: { config: any } }> = {
   [P in keyof List]: List[P]['config']
 }
