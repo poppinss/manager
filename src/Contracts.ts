@@ -17,15 +17,33 @@ export type ExtendCallback<Driver extends any> = (container: any, mappingName: s
  */
 export interface ManagerContract<
 	DriverContract extends any,
-	ReturnValueContract extends any = DriverContract,
-	MappingsList extends { [key: string]: ReturnValueContract } = { [key: string]: ReturnValueContract },
-	DefaultItem extends ReturnValueContract = ReturnValueContract
+	MappingValue extends any = DriverContract,
+	MappingsList extends { [key: string]: MappingValue } = { [key: string]: MappingValue }
 > {
+	/**
+	 * Returns concrete type when binding name is from the mappings lsit
+	 */
 	use<K extends keyof MappingsList>(name: K): MappingsList[K]
-	use(name: string): DefaultItem
-	use(): DefaultItem
+
+	/**
+	 * Returns mapping value when an unknown key is defined. This will be done, when someone
+	 * is trying to bypass static analysis
+	 */
+	use(name: string): MappingValue
+
+	/**
+	 * Return a overload of mapping when no key is defined
+	 */
+	use(): { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList]
+
+	/**
+	 * Extend by adding a new custom driver
+	 */
 	extend(name: string, callback: ExtendCallback<DriverContract>): void
 
+	/**
+	 * Release bindings from cache
+	 */
 	release<K extends keyof MappingsList>(name: K): void
 	release(name: string): void
 }

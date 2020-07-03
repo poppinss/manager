@@ -1,103 +1,25 @@
-import { ExtractImplementations, ExtractConfig } from '../src/Contracts'
+import { ManagerContract } from '../src/Contracts'
 
-import { Manager } from '../src/Manager'
+interface DriverContract {
+	run(): string
+}
 
-interface MailDriverContract {
+interface Smtp extends DriverContract {
 	send(): void
 }
 
-type SmtpConfig = {
-	driver: 'smtp'
-	host: string
-	user: string
-	password: string
-	port?: number
+interface Mailgun extends DriverContract {
+	verifyAndSend(): void
 }
 
-type MailchimpConfig = {
-	driver: 'mailchimp'
-	apiKey: string
+type Mappings = {
+	smtp: Smtp
+	mailgun: Mailgun
 }
 
-type MappingsList = {
-	transactional: {
-		config: SmtpConfig
-		implementation: SmtpDriver
-	}
-	promotional: {
-		config: MailchimpConfig
-		implementation: MailchimpDriver
-	}
-}
+type Mailer = ManagerContract<DriverContract, DriverContract, Mappings>
 
-class SmtpDriver {
-	constructor(public config: any) {}
-	public send() {}
-}
-
-class MailchimpDriver {
-	constructor(public config: any) {}
-	public send() {}
-}
-
-class Mailer extends Manager<MailDriverContract, ExtractImplementations<MappingsList>> {
-	constructor(container: any, private _config: any) {
-		super(container)
-	}
-
-	protected $cacheMappings = true
-
-	protected getDefaultMappingName(): string {
-		return this._config.mailer
-	}
-
-	protected getMappingConfig(name: string): any {
-		return this._config.mailers[name]
-	}
-
-	protected getMappingDriver(name: string): any {
-		return this._config.mailers[name].driver
-	}
-
-	protected createSmtp(_name: string, config: any) {
-		return new SmtpDriver(config)
-	}
-
-	protected createMailchimp(_name: string, config: any) {
-		return new MailchimpDriver(config)
-	}
-}
-
-type Config<Mailer extends keyof MappingsList> = {
-	mailer: Mailer
-	mailers: ExtractConfig<MappingsList>
-}
-
-const config: Config<'transactional'> = {
-	mailer: 'transactional',
-	mailers: {
-		transactional: {
-			driver: 'smtp',
-			host: '',
-			user: '',
-			password: '',
-		},
-
-		promotional: {
-			driver: 'mailchimp',
-			apiKey: '',
-		},
-	},
-}
-
-const mailer = new Mailer({}, config)
-class Postmark {
-	constructor(public _config: any) {}
-	public send() {}
-}
-
-mailer.extend('postmark', (_container, _name, driverConfig) => {
-	return new Postmark(driverConfig)
-})
+const a = {} as Mailer
+a.use()
 
 // mailer.use('')

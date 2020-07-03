@@ -19,9 +19,8 @@ import { ManagerContract, ExtendCallback } from './Contracts'
 export abstract class Manager<
 	DriverContract extends any,
 	ReturnValueContract extends any = DriverContract,
-	MappingsList extends { [key: string]: ReturnValueContract } = { [key: string]: ReturnValueContract },
-	DefaultItem extends ReturnValueContract = ReturnValueContract
-> implements ManagerContract<DriverContract, ReturnValueContract, MappingsList, DefaultItem> {
+	MappingsList extends { [key: string]: ReturnValueContract } = { [key: string]: ReturnValueContract }
+> implements ManagerContract<DriverContract, ReturnValueContract, MappingsList> {
 	/**
 	 * Mappings cache (if caching is enabled)
 	 */
@@ -30,14 +29,12 @@ export abstract class Manager<
 	/**
 	 * List of drivers added at runtime
 	 */
-	private extendedDrivers: {
-		[key: string]: ExtendCallback<DriverContract>
-	} = {}
+	private extendedDrivers: { [key: string]: ExtendCallback<DriverContract> } = {}
 
 	/**
 	 * Whether or not to cache mappings
 	 */
-	protected abstract $cacheMappings: boolean
+	protected abstract cacheMappings: boolean
 
 	/**
 	 * Getting the default mapping name, incase a mapping
@@ -71,7 +68,7 @@ export abstract class Manager<
 	 * `cacheDrivers` attribute before entertaining the cache.
 	 */
 	private saveToCache(name: string, value: ReturnValueContract): void {
-		if (this.$cacheMappings) {
+		if (this.cacheMappings) {
 			this.mappingsCache.set(name, value)
 		}
 	}
@@ -102,7 +99,7 @@ export abstract class Manager<
 		 * Raise error when the parent class doesn't implement the function
 		 */
 		if (typeof this[driverCreatorName] !== 'function') {
-			throw new Error(`${mappingName} driver is not supported by ${this.constructor.name}`)
+			throw new Error(`"${mappingName}" driver is not supported by "${this.constructor.name}"`)
 		}
 
 		const value = this.wrapDriverResponse(mappingName, this[driverCreatorName](mappingName, config))
@@ -123,10 +120,10 @@ export abstract class Manager<
 	 */
 	public use<K extends keyof MappingsList & string>(name: K): MappingsList[K]
 	public use(name: string): ReturnValueContract
-	public use(): DefaultItem
+	public use(): { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList]
 	public use<K extends keyof MappingsList & string>(
 		name?: K | string
-	): MappingsList[K] | ReturnValueContract | DefaultItem {
+	): MappingsList[K] | ReturnValueContract | { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList] {
 		name = name || this.getDefaultMappingName()
 
 		const cached = this.getFromCache(name)
