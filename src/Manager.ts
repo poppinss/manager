@@ -17,20 +17,21 @@ import { ManagerContract, ExtendCallback } from './Contracts'
  * `Auth` and so on.
  */
 export abstract class Manager<
+	Container extends any,
 	DriverContract extends any,
-	ReturnValueContract extends any = DriverContract,
-	MappingsList extends { [key: string]: ReturnValueContract } = any
-> implements ManagerContract<DriverContract, ReturnValueContract, MappingsList> {
+	MappingValue extends any = DriverContract,
+	MappingsList extends { [key: string]: MappingValue } = any
+> implements ManagerContract<Container, DriverContract, MappingValue, MappingsList> {
 	/**
 	 * Mappings cache (if caching is enabled)
 	 */
-	private mappingsCache: Map<string, ReturnValueContract> = new Map()
+	private mappingsCache: Map<string, MappingValue> = new Map()
 
 	/**
 	 * List of drivers added at runtime
 	 */
 	private extendedDrivers: {
-		[key: string]: ExtendCallback<ManagerContract<any>, DriverContract>
+		[key: string]: ExtendCallback<ManagerContract<any, any>, DriverContract>
 	} = {}
 
 	/**
@@ -55,13 +56,13 @@ export abstract class Manager<
 	 */
 	protected abstract getMappingDriver(mappingName: string): string | undefined
 
-	constructor(protected container: any) {}
+	constructor(public container: Container) {}
 
 	/**
 	 * Returns the value saved inside cache, this method will check for
 	 * `cacheDrivers` attribute before entertaining the cache
 	 */
-	private getFromCache(name: string): ReturnValueContract | null {
+	private getFromCache(name: string): MappingValue | null {
 		return this.mappingsCache.get(name) || null
 	}
 
@@ -69,7 +70,7 @@ export abstract class Manager<
 	 * Saves value to the cache with the driver name. This method will check for
 	 * `cacheDrivers` attribute before entertaining the cache.
 	 */
-	private saveToCache(name: string, value: ReturnValueContract): void {
+	private saveToCache(name: string, value: MappingValue): void {
 		if (this.cacheMappings) {
 			this.mappingsCache.set(name, value)
 		}
@@ -78,7 +79,7 @@ export abstract class Manager<
 	/**
 	 * Make the extended driver instance and save it to cache (if enabled)
 	 */
-	private makeExtendedDriver(mappingName: string, driver: string, config: any): ReturnValueContract {
+	private makeExtendedDriver(mappingName: string, driver: string, config: any): MappingValue {
 		const value = this.wrapDriverResponse(mappingName, this.extendedDrivers[driver](this, mappingName, config))
 		this.saveToCache(mappingName, value)
 		return value
@@ -91,7 +92,7 @@ export abstract class Manager<
 	 * For example: `stmp` as the driver name will look for `createSmtp`
 	 * method on the parent class.
 	 */
-	private makeDriver(mappingName: string, driver: string, config: any): ReturnValueContract {
+	private makeDriver(mappingName: string, driver: string, config: any): MappingValue {
 		const driverCreatorName = `create${driver.replace(/^\w|-\w/g, (g) => g.replace(/^-/, '').toUpperCase())}`
 
 		/**
@@ -109,8 +110,8 @@ export abstract class Manager<
 	/**
 	 * Optional method to wrap the driver response
 	 */
-	protected wrapDriverResponse(_: string, value: DriverContract): ReturnValueContract {
-		return (value as unknown) as ReturnValueContract
+	protected wrapDriverResponse(_: string, value: DriverContract): MappingValue {
+		return (value as unknown) as MappingValue
 	}
 
 	/**
@@ -118,11 +119,11 @@ export abstract class Manager<
 	 * the default driver will be resolved.
 	 */
 	public use<K extends keyof MappingsList & string>(name: K): MappingsList[K]
-	public use(name: string): ReturnValueContract
+	public use(name: string): MappingValue
 	public use(): { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList]
 	public use<K extends keyof MappingsList & string>(
 		name?: K | string
-	): MappingsList[K] | ReturnValueContract | { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList] {
+	): MappingsList[K] | MappingValue | { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList] {
 		name = name || this.getDefaultMappingName()
 
 		const cached = this.getFromCache(name)

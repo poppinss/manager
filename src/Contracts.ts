@@ -10,7 +10,7 @@
 /**
  * Shape of the extend callback
  */
-export type ExtendCallback<Manager extends ManagerContract<any>, Driver extends any> = (
+export type ExtendCallback<Manager extends ManagerContract<any, any>, Driver extends any> = (
 	manager: Manager,
 	mappingName: string,
 	config: any
@@ -20,10 +20,13 @@ export type ExtendCallback<Manager extends ManagerContract<any>, Driver extends 
  * Manager class shape
  */
 export interface ManagerContract<
+	Container extends any,
 	DriverContract extends any,
 	MappingValue extends any = DriverContract,
 	MappingsList extends { [key: string]: MappingValue } = any
 > {
+	container: Container
+
 	/**
 	 * Returns concrete type when binding name is from the mappings lsit
 	 */

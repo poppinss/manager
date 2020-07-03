@@ -17,7 +17,7 @@ type Mappings = {
 	mailgun: Mailgun
 }
 
-type Mailer = ManagerContract<DriverContract, DriverContract, Mappings>
+type Mailer = ManagerContract<any, DriverContract, DriverContract, Mappings>
 
 const a = {} as Mailer
 a.use()
