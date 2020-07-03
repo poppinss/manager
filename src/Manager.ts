@@ -19,7 +19,7 @@ import { ManagerContract, ExtendCallback } from './Contracts'
 export abstract class Manager<
 	DriverContract extends any,
 	ReturnValueContract extends any = DriverContract,
-	MappingsList extends { [key: string]: ReturnValueContract } = { [key: string]: ReturnValueContract }
+	MappingsList extends { [key: string]: ReturnValueContract } = any
 > implements ManagerContract<DriverContract, ReturnValueContract, MappingsList> {
 	/**
 	 * Mappings cache (if caching is enabled)
@@ -29,7 +29,9 @@ export abstract class Manager<
 	/**
 	 * List of drivers added at runtime
 	 */
-	private extendedDrivers: { [key: string]: ExtendCallback<DriverContract> } = {}
+	private extendedDrivers: {
+		[key: string]: ExtendCallback<ManagerContract<any>, DriverContract>
+	} = {}
 
 	/**
 	 * Whether or not to cache mappings
@@ -77,10 +79,7 @@ export abstract class Manager<
 	 * Make the extended driver instance and save it to cache (if enabled)
 	 */
 	private makeExtendedDriver(mappingName: string, driver: string, config: any): ReturnValueContract {
-		const value = this.wrapDriverResponse(
-			mappingName,
-			this.extendedDrivers[driver](this.container, mappingName, config)
-		)
+		const value = this.wrapDriverResponse(mappingName, this.extendedDrivers[driver](this, mappingName, config))
 		this.saveToCache(mappingName, value)
 		return value
 	}
@@ -165,7 +164,7 @@ export abstract class Manager<
 	 * Extend by adding new driver. The compositon of driver
 	 * is the responsibility of the callback function
 	 */
-	public extend(name: string, callback: ExtendCallback<DriverContract>) {
+	public extend(name: string, callback: ExtendCallback<this, DriverContract>) {
 		this.extendedDrivers[name] = callback
 	}
 }

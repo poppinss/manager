@@ -10,7 +10,11 @@
 /**
  * Shape of the extend callback
  */
-export type ExtendCallback<Driver extends any> = (container: any, mappingName: string, config: any) => Driver
+export type ExtendCallback<Manager extends ManagerContract<any>, Driver extends any> = (
+	manager: Manager,
+	mappingName: string,
+	config: any
+) => Driver
 
 /**
  * Manager class shape
@@ -18,7 +22,7 @@ export type ExtendCallback<Driver extends any> = (container: any, mappingName: s
 export interface ManagerContract<
 	DriverContract extends any,
 	MappingValue extends any = DriverContract,
-	MappingsList extends { [key: string]: MappingValue } = { [key: string]: MappingValue }
+	MappingsList extends { [key: string]: MappingValue } = any
 > {
 	/**
 	 * Returns concrete type when binding name is from the mappings lsit
@@ -39,7 +43,7 @@ export interface ManagerContract<
 	/**
 	 * Extend by adding a new custom driver
 	 */
-	extend(name: string, callback: ExtendCallback<DriverContract>): void
+	extend(name: string, callback: ExtendCallback<this, DriverContract>): void
 
 	/**
 	 * Release bindings from cache
