@@ -17,7 +17,7 @@ interface Mailable {
 test.group('Manager', () => {
 	test("raise error when driver create function doesn't exists", (assert) => {
 		class Mail extends Manager<any, Mailable> {
-			protected cacheMappings = false
+			protected singleton = false
 			protected getDefaultMappingName() {
 				return 'smtp'
 			}
@@ -42,7 +42,7 @@ test.group('Manager', () => {
 		}
 
 		class Mail extends Manager<any, Mailable> {
-			protected cacheMappings = false
+			protected singleton = false
 
 			protected getDefaultMappingName() {
 				return 'smtp'
@@ -74,7 +74,7 @@ test.group('Manager', () => {
 		}
 
 		class Mail extends Manager<any, Mailable> {
-			protected cacheMappings = false
+			protected singleton = false
 			protected getDefaultMappingName() {
 				return 'smtp'
 			}
@@ -103,7 +103,7 @@ test.group('Manager', () => {
 		}
 
 		class Mail extends Manager<any, Mailable> {
-			protected cacheMappings = false
+			protected singleton = false
 			protected getDefaultMappingName() {
 				return 'smtp'
 			}
@@ -123,7 +123,7 @@ test.group('Manager', () => {
 
 		const mail = new Mail({})
 		const driver = () => mail.use('mailgun')
-		assert.throw(driver, 'Make sure to define driver for mailgun mapping')
+		assert.throw(driver, 'Make sure to define driver for "mailgun" mapping')
 	})
 
 	test('extend by adding custom drivers', (assert) => {
@@ -132,7 +132,7 @@ test.group('Manager', () => {
 		}
 
 		class Mail extends Manager<any, Mailable> {
-			protected cacheMappings = false
+			protected singleton = false
 			protected getDefaultMappingName() {
 				return 'smtp'
 			}
@@ -168,7 +168,7 @@ test.group('Manager', () => {
 		}
 
 		class Mail extends Manager<any, Mailable> {
-			protected cacheMappings = true
+			protected singleton = true
 			protected getDefaultMappingName() {
 				return 'smtp'
 			}
@@ -204,7 +204,7 @@ test.group('Manager', () => {
 		}
 
 		class Mail extends Manager<any, Mailable> {
-			protected cacheMappings = true
+			protected singleton = true
 			protected getDefaultMappingName() {
 				return 'smtp'
 			}
@@ -240,7 +240,7 @@ test.group('Manager', () => {
 		}
 
 		class Mail extends Manager<any, Mailable> {
-			protected cacheMappings = true
+			protected singleton = true
 			protected getDefaultMappingName() {
 				return 'smtp'
 			}
@@ -278,7 +278,7 @@ test.group('Manager', () => {
 		}
 
 		class Mail extends Manager<any, Mailable, { mappingName: string; driver: Mailable }> {
-			protected cacheMappings = true
+			protected singleton = true
 			protected getDefaultMappingName() {
 				return 'smtp'
 			}
@@ -320,7 +320,7 @@ test.group('Manager', () => {
 		}
 
 		class Mail extends Manager<any, Mailable, { mappingName: string; driver: Mailable }> {
-			protected cacheMappings = true
+			protected singleton = true
 			protected getDefaultMappingName() {
 				return 'smtp'
 			}

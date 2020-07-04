@@ -37,7 +37,7 @@ export abstract class Manager<
 	/**
 	 * Whether or not to cache mappings
 	 */
-	protected abstract cacheMappings: boolean
+	protected abstract singleton: boolean
 
 	/**
 	 * Getting the default mapping name, incase a mapping
@@ -71,7 +71,7 @@ export abstract class Manager<
 	 * `cacheDrivers` attribute before entertaining the cache.
 	 */
 	private saveToCache(name: string, value: MappingValue): void {
-		if (this.cacheMappings) {
+		if (this.singleton) {
 			this.mappingsCache.set(name, value)
 		}
 	}
@@ -136,7 +136,7 @@ export abstract class Manager<
 		 */
 		const driver = this.getMappingDriver(name)
 		if (!driver) {
-			throw new Error(`Make sure to define driver for ${name} mapping`)
+			throw new Error(`Make sure to define driver for "${name}" mapping`)
 		}
 
 		/**
