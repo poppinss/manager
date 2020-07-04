@@ -13,13 +13,12 @@ interface Mailgun extends DriverContract {
 }
 
 type Mappings = {
-	smtp: Smtp
-	mailgun: Mailgun
+	promotional: Smtp
+	transactional: Mailgun
 }
 
 type Mailer = ManagerContract<any, DriverContract, DriverContract, Mappings>
 
-const a = {} as Mailer
-a.use()
+const mailer = {} as Mailer
 
-// mailer.use('')
+mailer.use('')

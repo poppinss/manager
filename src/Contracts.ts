@@ -28,7 +28,7 @@ export interface ManagerContract<
 	container: Container
 
 	/**
-	 * Returns concrete type when binding name is from the mappings lsit
+	 * Returns concrete type when binding name is from the mappings list
 	 */
 	use<K extends keyof MappingsList>(name: K): MappingsList[K]
 
