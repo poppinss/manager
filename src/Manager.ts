@@ -9,6 +9,13 @@
 
 import { ManagerContract, ExtendCallback } from './Contracts'
 
+const capitalize = (value: string) => {
+	if (!value) {
+		return value
+	}
+	return value.charAt(0).toUpperCase() + value.slice(1)
+}
+
 /**
  * Manager class implements the Builder pattern to make instance of similar
  * implementations using a fluent API vs importing each class by hand.
@@ -93,13 +100,17 @@ export abstract class Manager<
 	 * method on the parent class.
 	 */
 	private makeDriver(mappingName: string, driver: string, config: any): MappingValue {
-		const driverCreatorName = `create${driver.replace(/^\w|-\w/g, (g) => g.replace(/^-/, '').toUpperCase())}`
+		const driverCreatorName = `create${capitalize(
+			driver.replace(/-\w|_\w/g, (g) => {
+				return g.substr(1).toUpperCase()
+			})
+		)}`
 
 		/**
 		 * Raise error when the parent class doesn't implement the function
 		 */
 		if (typeof this[driverCreatorName] !== 'function') {
-			throw new Error(`"${mappingName}" driver is not supported by "${this.constructor.name}"`)
+			throw new Error(`"${driver}" driver is not supported by "${this.constructor.name}"`)
 		}
 
 		const value = this.wrapDriverResponse(mappingName, this[driverCreatorName](mappingName, config))

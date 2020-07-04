@@ -97,6 +97,122 @@ test.group('Manager', () => {
 		assert.instanceOf(driver, Mailgun)
 	})
 
+	test('resolve named driver with underscore (_) in it', (assert) => {
+		class Mailgun implements Mailable {
+			public send() {}
+		}
+
+		class Mail extends Manager<any, Mailable> {
+			protected singleton = false
+			protected getDefaultMappingName() {
+				return 'smtp'
+			}
+
+			protected getMappingConfig() {
+				return {}
+			}
+
+			protected getMappingDriver() {
+				return 'mail_gun'
+			}
+
+			public createMailGun(): Mailable {
+				return new Mailgun()
+			}
+		}
+
+		const mail = new Mail({})
+		const driver = mail.use('mailgun')
+		assert.instanceOf(driver, Mailgun)
+	})
+
+	test('resolve named driver with multiple underscores (_) in it', (assert) => {
+		class Mailgun implements Mailable {
+			public send() {}
+		}
+
+		class Mail extends Manager<any, Mailable> {
+			protected singleton = false
+			protected getDefaultMappingName() {
+				return 'smtp'
+			}
+
+			protected getMappingConfig() {
+				return {}
+			}
+
+			protected getMappingDriver() {
+				return 'mail_gun_driver'
+			}
+
+			public createMailGunDriver(): Mailable {
+				return new Mailgun()
+			}
+		}
+
+		const mail = new Mail({})
+		const driver = mail.use('mailgun')
+		assert.instanceOf(driver, Mailgun)
+	})
+
+	test('resolve named driver with dash (-) in it', (assert) => {
+		class Mailgun implements Mailable {
+			public send() {}
+		}
+
+		class Mail extends Manager<any, Mailable> {
+			protected singleton = false
+			protected getDefaultMappingName() {
+				return 'smtp'
+			}
+
+			protected getMappingConfig() {
+				return {}
+			}
+
+			protected getMappingDriver() {
+				return 'mail-gun'
+			}
+
+			public createMailGun(): Mailable {
+				return new Mailgun()
+			}
+		}
+
+		const mail = new Mail({})
+		const driver = mail.use('mailgun')
+		assert.instanceOf(driver, Mailgun)
+	})
+
+	test('resolve named driver with multiple dashes (-) in it', (assert) => {
+		class Mailgun implements Mailable {
+			public send() {}
+		}
+
+		class Mail extends Manager<any, Mailable> {
+			protected singleton = false
+			protected getDefaultMappingName() {
+				return 'smtp'
+			}
+
+			protected getMappingConfig() {
+				return {}
+			}
+
+			protected getMappingDriver() {
+				return 'mail-gun-driver'
+			}
+
+			public createMailGunDriver(): Mailable {
+				return new Mailgun()
+			}
+		}
+
+		const mail = new Mail({})
+		const driver = mail.use('mailgun')
+		assert.instanceOf(driver, Mailgun)
+	})
+
 	test('raise exception when driver for a mapping is missing', (assert) => {
 		class Mailgun implements Mailable {
 			public send() {}
