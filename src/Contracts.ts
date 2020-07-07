@@ -33,12 +33,6 @@ export interface ManagerContract<
 	use<K extends keyof MappingsList>(name: K): MappingsList[K]
 
 	/**
-	 * Returns mapping value when an unknown key is defined. This will be done, when someone
-	 * is trying to bypass static analysis
-	 */
-	use(name: string): MappingValue
-
-	/**
 	 * Return a overload of mapping when no key is defined
 	 */
 	use(): { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList]

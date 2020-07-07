@@ -20,5 +20,4 @@ type Mappings = {
 type Mailer = ManagerContract<any, DriverContract, DriverContract, Mappings>
 
 const mailer = {} as Mailer
-
-mailer.use('')
+mailer.use('transactional')
