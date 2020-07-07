@@ -10,9 +10,9 @@
 /**
  * Shape of the extend callback
  */
-export type ExtendCallback<Manager extends ManagerContract<any, any>, Driver extends any> = (
+export type ExtendCallback<Manager extends ManagerContract<any, any>, Driver extends any, Name extends any> = (
 	manager: Manager,
-	mappingName: string,
+	mappingName: Name,
 	config: any
 ) => Driver
 
@@ -40,7 +40,7 @@ export interface ManagerContract<
 	/**
 	 * Extend by adding a new custom driver
 	 */
-	extend(name: string, callback: ExtendCallback<this, DriverContract>): void
+	extend(name: string, callback: ExtendCallback<this, DriverContract, keyof MappingsList>): void
 
 	/**
 	 * Release bindings from cache

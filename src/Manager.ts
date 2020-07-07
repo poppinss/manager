@@ -32,13 +32,13 @@ export abstract class Manager<
 	/**
 	 * Mappings cache (if caching is enabled)
 	 */
-	private mappingsCache: Map<string, MappingValue> = new Map()
+	private mappingsCache: Map<keyof MappingsList, MappingValue> = new Map()
 
 	/**
 	 * List of drivers added at runtime
 	 */
 	private extendedDrivers: {
-		[key: string]: ExtendCallback<ManagerContract<any, any>, DriverContract>
+		[key: string]: ExtendCallback<ManagerContract<any, any>, DriverContract, keyof MappingsList>
 	} = {}
 
 	/**
@@ -50,18 +50,18 @@ export abstract class Manager<
 	 * Getting the default mapping name, incase a mapping
 	 * is not defined
 	 */
-	protected abstract getDefaultMappingName(): string
+	protected abstract getDefaultMappingName(): keyof MappingsList
 
 	/**
 	 * Getting config for the mapping. It is required for making
 	 * extended drivers
 	 */
-	protected abstract getMappingConfig(mappingName: string): any | undefined
+	protected abstract getMappingConfig(mappingName: keyof MappingsList): any | undefined
 
 	/**
 	 * Getting the driver name for the mapping
 	 */
-	protected abstract getMappingDriver(mappingName: string): string | undefined
+	protected abstract getMappingDriver(mappingName: keyof MappingsList): string | undefined
 
 	constructor(public container: Container) {}
 
@@ -69,7 +69,7 @@ export abstract class Manager<
 	 * Returns the value saved inside cache, this method will check for
 	 * `cacheDrivers` attribute before entertaining the cache
 	 */
-	private getFromCache(name: string): MappingValue | null {
+	private getFromCache(name: keyof MappingsList): MappingValue | null {
 		return this.mappingsCache.get(name) || null
 	}
 
@@ -77,7 +77,7 @@ export abstract class Manager<
 	 * Saves value to the cache with the driver name. This method will check for
 	 * `cacheDrivers` attribute before entertaining the cache.
 	 */
-	private saveToCache(name: string, value: MappingValue): void {
+	private saveToCache(name: keyof MappingsList, value: MappingValue): void {
 		if (this.singleton) {
 			this.mappingsCache.set(name, value)
 		}
@@ -86,7 +86,7 @@ export abstract class Manager<
 	/**
 	 * Make the extended driver instance and save it to cache (if enabled)
 	 */
-	private makeExtendedDriver(mappingName: string, driver: string, config: any): MappingValue {
+	private makeExtendedDriver(mappingName: keyof MappingsList, driver: string, config: any): MappingValue {
 		const value = this.wrapDriverResponse(mappingName, this.extendedDrivers[driver](this, mappingName, config))
 		this.saveToCache(mappingName, value)
 		return value
@@ -99,7 +99,7 @@ export abstract class Manager<
 	 * For example: `stmp` as the driver name will look for `createSmtp`
 	 * method on the parent class.
 	 */
-	private makeDriver(mappingName: string, driver: string, config: any): MappingValue {
+	private makeDriver(mappingName: keyof MappingsList, driver: string, config: any): MappingValue {
 		const driverCreatorName = `create${capitalize(
 			driver.replace(/-\w|_\w/g, (g) => {
 				return g.substr(1).toUpperCase()
@@ -121,7 +121,7 @@ export abstract class Manager<
 	/**
 	 * Optional method to wrap the driver response
 	 */
-	protected wrapDriverResponse(_: string, value: DriverContract): MappingValue {
+	protected wrapDriverResponse(_: keyof MappingsList, value: DriverContract): MappingValue {
 		return (value as unknown) as MappingValue
 	}
 
@@ -130,14 +130,13 @@ export abstract class Manager<
 	 * the default driver will be resolved.
 	 */
 	public use<K extends keyof MappingsList & string>(name: K): MappingsList[K]
-	public use(name: string): MappingValue
 	public use(): { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList]
 	public use<K extends keyof MappingsList & string>(
-		name?: K | string
+		name?: K
 	): MappingsList[K] | MappingValue | { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList] {
-		name = name || this.getDefaultMappingName()
+		const mappingName = name || this.getDefaultMappingName()
 
-		const cached = this.getFromCache(name)
+		const cached = this.getFromCache(mappingName)
 		if (cached) {
 			return cached
 		}
@@ -145,7 +144,7 @@ export abstract class Manager<
 		/**
 		 * Ensure that driver exists for a given mapping
 		 */
-		const driver = this.getMappingDriver(name)
+		const driver = this.getMappingDriver(mappingName)
 		if (!driver) {
 			throw new Error(`Make sure to define driver for "${name}" mapping`)
 		}
@@ -154,13 +153,13 @@ export abstract class Manager<
 		 * Making the extended driver
 		 */
 		if (this.extendedDrivers[driver]) {
-			return this.makeExtendedDriver(name, driver, this.getMappingConfig(name))
+			return this.makeExtendedDriver(mappingName, driver, this.getMappingConfig(mappingName))
 		}
 
 		/**
 		 * Making the predefined driver
 		 */
-		return this.makeDriver(name, driver, this.getMappingConfig(name))
+		return this.makeDriver(mappingName, driver, this.getMappingConfig(mappingName))
 	}
 
 	/**
@@ -176,7 +175,7 @@ export abstract class Manager<
 	 * Extend by adding new driver. The compositon of driver
 	 * is the responsibility of the callback function
 	 */
-	public extend(name: string, callback: ExtendCallback<this, DriverContract>) {
+	public extend(name: string, callback: ExtendCallback<this, DriverContract, keyof MappingsList>) {
 		this.extendedDrivers[name] = callback
 	}
 }
