@@ -86,8 +86,15 @@ export abstract class Manager<
 	/**
 	 * Make the extended driver instance and save it to cache (if enabled)
 	 */
-	private makeExtendedDriver(mappingName: keyof MappingsList, driver: string, config: any): MappingValue {
-		const value = this.wrapDriverResponse(mappingName, this.extendedDrivers[driver](this, mappingName, config))
+	private makeExtendedDriver(
+		mappingName: keyof MappingsList,
+		driver: string,
+		config: any
+	): MappingValue {
+		const value = this.wrapDriverResponse(
+			mappingName,
+			this.extendedDrivers[driver](this, mappingName, config)
+		)
 		this.saveToCache(mappingName, value)
 		return value
 	}
@@ -133,7 +140,10 @@ export abstract class Manager<
 	public use(): { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList]
 	public use<K extends keyof MappingsList & string>(
 		name?: K
-	): MappingsList[K] | MappingValue | { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList] {
+	):
+		| MappingsList[K]
+		| MappingValue
+		| { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList] {
 		const mappingName = name || this.getDefaultMappingName()
 
 		const cached = this.getFromCache(mappingName)

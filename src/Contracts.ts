@@ -10,11 +10,11 @@
 /**
  * Shape of the extend callback
  */
-export type ExtendCallback<Manager extends ManagerContract<any, any>, Driver extends any, Name extends any> = (
-	manager: Manager,
-	mappingName: Name,
-	config: any
-) => Driver
+export type ExtendCallback<
+	Manager extends ManagerContract<any, any>,
+	Driver extends any,
+	Name extends any
+> = (manager: Manager, mappingName: Name, config: any) => Driver
 
 /**
  * Manager class shape
