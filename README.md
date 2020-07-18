@@ -5,7 +5,7 @@
 # Manager Pattern
 > Implementation of the Manager pattern used by AdonisJS
 
-[![circleci-image]][circleci-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url]
+[![circleci-image]][circleci-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url] [![audit-report-image]][audit-report-url]
 
 Manager pattern is a way to ease the construction of objects of similar nature. To understand it better, we will follow an imaginary example through out this document.
 
@@ -288,3 +288,6 @@ Once mailer mappings have been defined, the `use` method will have proper return
 
 [license-image]: https://img.shields.io/npm/l/@poppinss/manager?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md "license"
+
+[audit-report-image]: https://img.shields.io/badge/-Audit%20Report-blueviolet?style=for-the-badge
+[audit-report-url]: https://htmlpreview.github.io/?https://github.com/poppinss/manager/blob/develop/npm-audit.html "audit-report"
