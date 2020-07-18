@@ -9,6 +9,9 @@
 
 import { ManagerContract, ExtendCallback } from './Contracts'
 
+/**
+ * The simplest implementation of capitalizing a string
+ */
 const capitalize = (value: string) => {
 	if (!value) {
 		return value
@@ -33,6 +36,11 @@ export abstract class Manager<
 	 * Mappings cache (if caching is enabled)
 	 */
 	private mappingsCache: Map<keyof MappingsList, MappingValue> = new Map()
+
+	/**
+	 * A cache to store the function names for initiating driver instances.
+	 */
+	private driverCreatorNames: Map<string, string> = new Map()
 
 	/**
 	 * List of drivers added at runtime
@@ -100,6 +108,20 @@ export abstract class Manager<
 	}
 
 	/**
+	 * Returns the creator function name for a given driver.
+	 */
+	private getDriverCreatorName(driver: string): string {
+		if (!this.driverCreatorNames.has(driver)) {
+			this.driverCreatorNames.set(
+				driver,
+				`create${capitalize(driver.replace(/-\w|_\w/g, (g) => g.substr(1).toUpperCase()))}`
+			)
+		}
+
+		return this.driverCreatorNames.get(driver)!
+	}
+
+	/**
 	 * Make the custom driver instance by checking for function on the
 	 * parent class.
 	 *
@@ -107,11 +129,7 @@ export abstract class Manager<
 	 * method on the parent class.
 	 */
 	private makeDriver(mappingName: keyof MappingsList, driver: string, config: any): MappingValue {
-		const driverCreatorName = `create${capitalize(
-			driver.replace(/-\w|_\w/g, (g) => {
-				return g.substr(1).toUpperCase()
-			})
-		)}`
+		const driverCreatorName = this.getDriverCreatorName(driver)
 
 		/**
 		 * Raise error when the parent class doesn't implement the function
