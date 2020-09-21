@@ -3,6 +3,7 @@
 </div>
 
 # Manager Pattern
+
 > Implementation of the Manager pattern used by AdonisJS
 
 [![circleci-image]][circleci-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url] [![audit-report-image]][audit-report-url]
@@ -31,7 +32,6 @@ Manager pattern is a way to ease the construction of objects of similar nature. 
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-
 ## Scanerio
 
 Let's imagine we are creating a mailing library and it supports multiple drivers like: **SMTP**, **Mailgun**, **PostMark** and so on. Also, we want the users of our library to use each driver for multiple times using different configuration. For example:
@@ -57,7 +57,6 @@ The above approach works perfect, but has few drawbacks
 - If the construction of the drivers needs more than one constructor arguments, then it will become cumbersome for the consumer to satisfy all those dependencies.
 - They will have to manually manage the lifecycle of the constructed objects. Ie `promotional` and `transactional` in this case.
 
-
 ## Using a Manager Class
 
 What we really need is a Manager to manage and construct these objects in the most ergonomic way.
@@ -68,17 +67,17 @@ First step is to move the mappings to a configuration file. The config mimics th
 
 ```ts
 const mailersConfig = {
-	default: 'transactional',
-	
-	list: {
-		transactional: {
-			driver: 'mailgun'
-		},
+  default: 'transactional',
 
-		promotional: {
-			driver: 'mailgun'
-		},
-	}
+  list: {
+    transactional: {
+      driver: 'mailgun',
+    },
+
+    promotional: {
+      driver: 'mailgun',
+    },
+  },
 }
 ```
 
@@ -88,11 +87,11 @@ const mailersConfig = {
 import { Manager } from '@poppinss/manager'
 
 class MailManager implements Manager {
-	protected singleton = true
+  protected singleton = true
 
-	constructor (private config) {
-		super({})
-	}
+  constructor(private config) {
+    super({})
+  }
 }
 ```
 
@@ -104,25 +103,25 @@ The **Base Manager** class will do all the heavy lifting for you. However, you w
 import { Manager } from '@poppinss/manager'
 
 class MailManager implements Manager {
-	protected singleton = true
+  protected singleton = true
 
-	protected getDefaultMappingName() {
-		return this.config.default
-	}
+  protected getDefaultMappingName() {
+    return this.config.default
+  }
 
-	protected getMappingConfig(mappingName: string) {
-		return this.config.list[mappingName]
-	}
+  protected getMappingConfig(mappingName: string) {
+    return this.config.list[mappingName]
+  }
 
-	protected getMappingDriver(mappingName: string) {
-		return this.config.list[mappingName].driver
-	}
+  protected getMappingDriver(mappingName: string) {
+    return this.config.list[mappingName].driver
+  }
 
-	constructor (private config) {
-		super({})
-	}
+  constructor(private config) {
+    super({})
+  }
 }
-``` 
+```
 
 ### Step 4: Move drivers construction into the manager class
 
@@ -132,15 +131,15 @@ The final step is to write the code for constructing drivers. The **Base Manager
 import { Manager } from '@poppinss/manager'
 
 class MailManager implements Manager {
-	 // ... The existing code
-	 
-	 public createMailgun (mappingName, config) {
-		 return new Mailgun(config)
-	 }
+  // ... The existing code
 
-	 public createSmtp (mappingName, config) {
-		 return new Smtp(config)
-	 }
+  public createMailgun(mappingName, config) {
+    return new Mailgun(config)
+  }
+
+  public createSmtp(mappingName, config) {
+    return new Smtp(config)
+  }
 }
 ```
 
@@ -150,17 +149,17 @@ Once done, the consumer of the Mailer class just needs to define the mappings co
 
 ```ts
 const mailersConfig = {
-	default: 'transactional',
-	
-	list: {
-		transactional: {
-			driver: 'mailgun'
-		},
+  default: 'transactional',
 
-		promotional: {
-			driver: 'mailgun'
-		},
-	}
+  list: {
+    transactional: {
+      driver: 'mailgun',
+    },
+
+    promotional: {
+      driver: 'mailgun',
+    },
+  },
 }
 
 const mailer = new MailManager(mailersConfig)
@@ -171,7 +170,7 @@ mailer.use('promotional').send()
 
 - The lifecycle of the mailers is now encapsulated within the manager class. The consumer can call `mailer.use()` as many times as they want, without worrying about creating too many un-used objects.
 - They just need to define the mailers config once and get rid of any custom code required to construct individual drivers.
-	
+
 ## Extending from outside-in
 
 The Base Manager class comes with first class support for adding custom drivers from outside-in using the `extend` method.
@@ -180,7 +179,7 @@ The Base Manager class comes with first class support for adding custom drivers 
 const mailer = new MailManager(mailersConfig)
 
 mailer.extend('postmark', (manager, mappingName, config) => {
-	return new PostMark(config)
+  return new PostMark(config)
 })
 ```
 
@@ -201,10 +200,9 @@ Following is a dummy interface, we expect all drivers to adhere too
 
 ```ts
 interface DriverContract {
-	send (): Promise<void>
+  send(): Promise<void>
 }
 ```
-
 
 ### Passing interface to Manager
 
@@ -212,10 +210,7 @@ interface DriverContract {
 import { Manager } from '@poppinss/manager'
 import { DriverContract } from './Contracts'
 
-class MailManager implements Manager<
-	DriverContract
-> {
-}
+class MailManager implements Manager<DriverContract> {}
 ```
 
 ## Mappings Type
@@ -226,31 +221,31 @@ In order to improve intellisense for the `use` method. You will have to define a
 
 ```ts
 type MailerMappings = {
-	transactional: Mailgun,
-	promotional: Mailgun
+  transactional: Mailgun
+  promotional: Mailgun
 }
 
 type MailerConfig = {
-	default: keyof MailerMappings,
-	list: {
-		[K in keyof MailerMappings]: any
-	}
+  default: keyof MailerMappings
+  list: {
+    [K in keyof MailerMappings]: any
+  }
 }
 
 const mailerConfig: MailerConfig = {
-	default: 'transactional',
+  default: 'transactional',
 
-	list: {
-		transactional: {
-			driver: 'mailgun',
-			// ...
-		},
+  list: {
+    transactional: {
+      driver: 'mailgun',
+      // ...
+    },
 
-		promotional: {
-			driver: 'mailgun',
-			// ...
-		},    
-	}
+    promotional: {
+      driver: 'mailgun',
+      // ...
+    },
+  },
 }
 ```
 
@@ -259,12 +254,7 @@ Finally, pass the `MailerMappings` to the Base Manager class
 ```ts
 import { DriverContract, MailerMappings } from './Contracts'
 
-class MailManager implements Manager<
-	DriverContract,
-	DriverContract,
-	MailerMappings
-> {
-}
+class MailManager implements Manager<DriverContract, DriverContract, MailerMappings> {}
 ```
 
 Once mailer mappings have been defined, the `use` method will have proper return types.
@@ -278,16 +268,12 @@ Once mailer mappings have been defined, the `use` method will have proper return
 ![](assets/return-type.png)
 
 [circleci-image]: https://img.shields.io/circleci/project/github/poppinss/manager/master.svg?style=for-the-badge&logo=circleci
-[circleci-url]: https://circleci.com/gh/poppinss/manager "circleci"
-
+[circleci-url]: https://circleci.com/gh/poppinss/manager 'circleci'
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
-[typescript-url]:  "typescript"
-
+[typescript-url]: "typescript"
 [npm-image]: https://img.shields.io/npm/v/@poppinss/manager.svg?style=for-the-badge&logo=npm
-[npm-url]: https://npmjs.org/package/@poppinss/manager "npm"
-
+[npm-url]: https://npmjs.org/package/@poppinss/manager 'npm'
 [license-image]: https://img.shields.io/npm/l/@poppinss/manager?color=blueviolet&style=for-the-badge
-[license-url]: LICENSE.md "license"
-
+[license-url]: LICENSE.md 'license'
 [audit-report-image]: https://img.shields.io/badge/-Audit%20Report-blueviolet?style=for-the-badge
-[audit-report-url]: https://htmlpreview.github.io/?https://github.com/poppinss/manager/blob/develop/npm-audit.html "audit-report"
+[audit-report-url]: https://htmlpreview.github.io/?https://github.com/poppinss/manager/blob/develop/npm-audit.html 'audit-report'
