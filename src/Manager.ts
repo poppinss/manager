@@ -174,7 +174,7 @@ export abstract class Manager<
 		 */
 		const driver = this.getMappingDriver(mappingName)
 		if (!driver) {
-			throw new Error(`Make sure to define driver for "${name}" mapping`)
+			throw new Error(`Make sure to define driver for "${mappingName}" mapping`)
 		}
 
 		/**
