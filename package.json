@@ -1,6 +1,6 @@
 {
 	"name": "@poppinss/manager",
-	"version": "3.0.6",
+	"version": "3.0.7",
 	"description": "The builder (Manager) pattern implementation",
 	"main": "build/index.js",
 	"files": [
