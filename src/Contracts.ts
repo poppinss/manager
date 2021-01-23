@@ -20,12 +20,12 @@ export type ExtendCallback<
  * Manager class shape
  */
 export interface ManagerContract<
-	Container extends any,
+	Application extends any,
 	DriverContract extends any,
 	MappingValue extends any = DriverContract,
 	MappingsList extends { [key: string]: MappingValue } = any
 > {
-	container: Container
+	application: Application
 
 	/**
 	 * Returns concrete type when binding name is from the mappings list

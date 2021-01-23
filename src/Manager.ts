@@ -27,11 +27,11 @@ const capitalize = (value: string) => {
  * `Auth` and so on.
  */
 export abstract class Manager<
-	Container extends any,
+	Application extends any,
 	DriverContract extends any,
 	MappingValue extends any = DriverContract,
 	MappingsList extends { [key: string]: MappingValue } = any
-> implements ManagerContract<Container, DriverContract, MappingValue, MappingsList> {
+> implements ManagerContract<Application, DriverContract, MappingValue, MappingsList> {
 	/**
 	 * Mappings cache (if caching is enabled)
 	 */
@@ -71,7 +71,7 @@ export abstract class Manager<
 	 */
 	protected abstract getMappingDriver(mappingName: keyof MappingsList): string | undefined
 
-	constructor(public container: Container) {}
+	constructor(public application: Application) {}
 
 	/**
 	 * Returns the value saved inside cache, this method will check for
