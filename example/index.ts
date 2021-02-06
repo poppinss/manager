@@ -1,20 +1,20 @@
 import { ManagerContract } from '../src/Contracts'
 
 interface DriverContract {
-	run(): string
+  run(): string
 }
 
 interface Smtp extends DriverContract {
-	send(): void
+  send(): void
 }
 
 interface Mailgun extends DriverContract {
-	verifyAndSend(): void
+  verifyAndSend(): void
 }
 
 type Mappings = {
-	promotional: Smtp
-	transactional: Mailgun
+  promotional: Smtp
+  transactional: Mailgun
 }
 
 type Mailer = ManagerContract<any, DriverContract, DriverContract, Mappings>
