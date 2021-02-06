@@ -161,7 +161,7 @@ export abstract class Manager<
   ):
     | MappingsList[K]
     | MappingValue
-    | { [K in keyof MappingsList]: MappingsList[K] }[keyof MappingsList] {
+    | { [Mapping in keyof MappingsList]: MappingsList[Mapping] }[keyof MappingsList] {
     const mappingName = name || this.getDefaultMappingName()
 
     const cached = this.getFromCache(mappingName)
