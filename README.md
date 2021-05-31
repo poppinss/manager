@@ -6,7 +6,7 @@
 
 > Implementation of the Manager pattern used by AdonisJS
 
-[![circleci-image]][circleci-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url] [![synk-image]][synk-url]
+[![gh-workflow-image]][gh-workflow-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url] [![synk-image]][synk-url]
 
 Manager pattern is a way to ease the construction of objects of similar nature. To understand it better, we will follow an imaginary example through out this document.
 
@@ -267,13 +267,17 @@ Once mailer mappings have been defined, the `use` method will have proper return
 
 ![](assets/return-type.png)
 
-[circleci-image]: https://img.shields.io/circleci/project/github/poppinss/manager/master.svg?style=for-the-badge&logo=circleci
-[circleci-url]: https://circleci.com/gh/poppinss/manager 'circleci'
+[gh-workflow-image]: https://img.shields.io/github/workflow/status/poppinss/manager/test?style=for-the-badge
+[gh-workflow-url]: https://github.com/poppinss/manager/actions/workflows/test.yml "Github action"
+
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
 [typescript-url]: "typescript"
+
 [npm-image]: https://img.shields.io/npm/v/@poppinss/manager.svg?style=for-the-badge&logo=npm
 [npm-url]: https://npmjs.org/package/@poppinss/manager 'npm'
+
 [license-image]: https://img.shields.io/npm/l/@poppinss/manager?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md 'license'
+
 [synk-image]: https://img.shields.io/snyk/vulnerabilities/github/poppinss/manager?label=Synk%20Vulnerabilities&style=for-the-badge
 [synk-url]: https://snyk.io/test/github/poppinss/manager?targetFile=package.json 'synk'
