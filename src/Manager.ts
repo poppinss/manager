@@ -31,7 +31,8 @@ export abstract class Manager<
   DriverContract extends any,
   MappingValue extends any = DriverContract,
   MappingsList extends { [key: string]: MappingValue } = any
-> implements ManagerContract<Application, DriverContract, MappingValue, MappingsList> {
+> implements ManagerContract<Application, DriverContract, MappingValue, MappingsList>
+{
   /**
    * Mappings cache (if caching is enabled)
    */
@@ -147,7 +148,7 @@ export abstract class Manager<
    * Optional method to wrap the driver response
    */
   protected wrapDriverResponse(_: keyof MappingsList, value: DriverContract): MappingValue {
-    return (value as unknown) as MappingValue
+    return value as unknown as MappingValue
   }
 
   /**
